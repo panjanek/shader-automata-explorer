@@ -8,6 +8,6 @@ out vec4 fragColor;
 
 void main()
 {
-    float v = texture(uState, vUV).r;
-    fragColor = vec4(v, v, v, 1.0);
+    vec4 color = texture(uState, vUV);
+    fragColor = color;
 }

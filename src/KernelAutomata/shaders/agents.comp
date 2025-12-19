@@ -142,6 +142,15 @@ void update_one(uint idx)
     agents[idx] = agent;
 }
 
+void write_color(uint idx)
+{
+    Agent agent = agents[idx];
+    ivec2 pixelPos = ivec2(uint(agent.position.x), uint(agent.position.y));
+    vec4 current = imageLoad(uStateImage, pixelPos);
+    if (agent.species == 0)
+        current.r = 1.0;
+    imageStore(uStateImage, pixelPos, current); 
+}
 
 void main()
 {
@@ -150,12 +159,14 @@ void main()
     if (idx >=0 && idx < config.agentsCount) {
 
         update_one(idx);
+        write_color(idx);
 
         // Write into texture (inject energy / state)
+        /*
         imageStore(
             uStateImage,
             ivec2(uint(agents[idx].position.x), uint(agents[idx].position.y)),
             vec4(1.0, 0.0, 0.0, 0.0)
-        );
+        );*/
     }
 }

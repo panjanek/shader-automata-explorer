@@ -45,7 +45,7 @@ void main()
         0.0,   0.0,   0.0,   0.0,   0.0
     );
 
-    float sum = 0.0;
+    vec4 sum = vec4(0,0,0,0);
     float norm = 0;
     int k = 0;
     for (int j = -2; j <= 2; j++)
@@ -67,21 +67,18 @@ void main()
             if (src.y > 1.0)
                 src.y -= 1.0;
 
-            float v = texture(uPrevState, src).r;
+            vec4 current = texture(uPrevState, src);
             norm += kernel5blur[k];
-            sum += v * kernel5blur[k++];
+            sum += current * kernel5blur[k++];
         }
     }
 
-    float result = 0.98*(sum/norm);//inverted_bell(sum);
-    if (result < 0)
-      result = 0;
-
-    if (result > 1.0)
-      result=1.0;
-
-
+    vec4 result = 0.98*(sum/norm);//inverted_bell(sum);
+    if (result.r < 0)
+      result.r = 0;
+    if (result.r > 1.0)
+      result.r=1.0;
 
     // Store scalar state in .r channel
-    outState = vec4(result, 0.0, 0.0, 0.0);
+    outState = result;
 }
