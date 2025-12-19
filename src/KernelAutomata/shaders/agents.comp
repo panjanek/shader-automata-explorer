@@ -82,20 +82,19 @@ float scaleToRange01(uint state)
     return state / 4294967295.0;
 }
 
-float sense(Agent agent, float sensorAngle, float sensorDist, int sensorSize)
+vec4 sense(Agent agent, float sensorAngle, float sensorDist, int sensorSize)
 {
     float sensingAngle = agent.angle + sensorAngle;
     vec2 sensingDir = vec2(cos(sensingAngle),sin(sensingAngle));
     vec2 sensingCenter = agent.position + sensingDir * sensorDist;
     ivec2 center = ivec2(int(sensingCenter.x),int(sensingCenter.y));
-    float sum = 0;
+    vec4 sum = vec4(0,0,0,0);
     for(int offsetX=-sensorSize; offsetX <= sensorSize; offsetX++)
         for(int offsetY=-sensorSize; offsetY <= sensorSize; offsetY++)
         {
             ivec2 sensePixel = center + ivec2(offsetX, offsetY);
             itorus(sensePixel);
-            float senseValue = imageLoad(uStateImage, sensePixel).r;
-            sum += senseValue;
+            sum += imageLoad(uStateImage, sensePixel);
         }
 
     return sum;
@@ -112,9 +111,25 @@ void update_one(uint idx)
     else if (agent.species == 2)
         spec = config.species_b;
 
-    float senseLeft = sense(agent, -spec.sensorAngle, spec.sensorDistance, spec.sensorSize);
-    float senseForward = sense(agent, 0, spec.sensorDistance, spec.sensorSize);
-    float senseRight = sense(agent, spec.sensorAngle, spec.sensorDistance, spec.sensorSize);
+    vec4 senseLeftMulti = sense(agent, -spec.sensorAngle, spec.sensorDistance, spec.sensorSize);
+    vec4 senseForwardMulti = sense(agent, 0, spec.sensorDistance, spec.sensorSize);
+    vec4 senseRightMulti = sense(agent, spec.sensorAngle, spec.sensorDistance, spec.sensorSize);
+
+    float senseLeft = senseLeftMulti.r;
+    float senseForward = senseForwardMulti.r;
+    float senseRight = senseRightMulti.r;
+    if (agent.species == 1)
+    {
+        senseLeft = senseLeftMulti.g;
+        senseForward = senseForwardMulti.g;
+        senseRight = senseRightMulti.g;
+    }
+    else if (agent.species == 2)
+    {
+        senseLeft = senseLeftMulti.b;
+        senseForward = senseForwardMulti.b;
+        senseRight = senseRightMulti.b;
+    }
 
     uint random =  hash(uint(agent.position.y * config.width + agent.position.x) + hash(gl_GlobalInvocationID.x + config.time * 100000));
     float randomSteerStrength = scaleToRange01(random);
@@ -149,6 +164,10 @@ void write_color(uint idx)
     vec4 current = imageLoad(uStateImage, pixelPos);
     if (agent.species == 0)
         current.r = 1.0;
+    else if (agent.species == 1)
+        current.g = 1.0;
+    else
+        current.b = 1.0;
     imageStore(uStateImage, pixelPos, current); 
 }
 
@@ -160,13 +179,5 @@ void main()
 
         update_one(idx);
         write_color(idx);
-
-        // Write into texture (inject energy / state)
-        /*
-        imageStore(
-            uStateImage,
-            ivec2(uint(agents[idx].position.x), uint(agents[idx].position.y)),
-            vec4(1.0, 0.0, 0.0, 0.0)
-        );*/
     }
 }

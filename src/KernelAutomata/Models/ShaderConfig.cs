@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace KernelAutomata.Models
 {
-    [StructLayout(LayoutKind.Explicit, Size = 12)]
-    public unsafe struct ShaderConfig
+    [StructLayout(LayoutKind.Explicit, Size = 76)]
+    public struct ShaderConfig
     {
         [FieldOffset(0)]
         public int agentsCount;
@@ -25,14 +25,14 @@ namespace KernelAutomata.Models
         [FieldOffset(16)]
         public SpeciesConfig species_r;
 
-        [FieldOffset(48)]
+        [FieldOffset(36)]
         public SpeciesConfig species_g;
 
-        [FieldOffset(80)]
+        [FieldOffset(56)]
         public SpeciesConfig species_b;
     }
 
-    [StructLayout(LayoutKind.Explicit, Size = 32)]
+    [StructLayout(LayoutKind.Explicit, Size = 20)]
     public struct SpeciesConfig
     {
         public SpeciesConfig()
@@ -58,10 +58,5 @@ namespace KernelAutomata.Models
 
         [FieldOffset(16)]
         public int sensorSize;
-
-        // Padding required by std140
-        [FieldOffset(20)] private int _pad0;
-        [FieldOffset(24)] private int _pad1;
-        [FieldOffset(28)] private int _pad2;
     }
 }
