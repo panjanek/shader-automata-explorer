@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -79,6 +80,7 @@ namespace KernelAutomata.Gui
             shaderConfig.agentsCount = 1000000;
             shaderConfig.width = width;
             shaderConfig.height = height;
+            shaderConfig.species_r = new SpeciesConfig();
 
             host = new System.Windows.Forms.Integration.WindowsFormsHost();
             host.Visibility = Visibility.Visible;
@@ -104,8 +106,6 @@ namespace KernelAutomata.Gui
 
             //setup required features
             GL.Enable(EnableCap.ProgramPointSize);
-            //GL.Enable(EnableCap.Blend);
-            //GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.One);
             GL.Disable(EnableCap.Blend);
             GL.BlendEquation(OpenTK.Graphics.OpenGL.BlendEquationMode.FuncAdd);
             GL.Enable(EnableCap.PointSprite);
@@ -138,10 +138,9 @@ namespace KernelAutomata.Gui
             for(int i=0; i<agents.Length; i++)
             {
                 var angle = rnd.NextDouble()*Math.PI*2;
-                var r = 0.4 * Math.Min(width, height)* rnd.NextDouble();
+                var r = 0.48 * Math.Min(width, height)* rnd.NextDouble();
                 agents[i].position = new Vector2((float)(width/2 + r * Math.Cos(angle)), (float)(height/2 + r*Math.Sin(angle)));
                 agents[i].angle = (float)(Math.PI + angle);
-                //agents[i].velocity = new Vector2((float)(v*Math.Sin(angle)), (float)(v *Math.Cos(angle)));
             }
             GL.BindBuffer(BufferTarget.ShaderStorageBuffer, agentsBuffer);
             GL.BufferSubData(BufferTarget.ShaderStorageBuffer, 0, shaderConfig.agentsCount * shaderAgentStrideSize, agents);
@@ -171,7 +170,6 @@ namespace KernelAutomata.Gui
                 }
             }*/
             UploadInitialState(stateTexA, initialState);
-            UploadInitialState(stateTexB, initialState);
 
             fboA = CreateFboForTexture(stateTexA);
             fboB = CreateFboForTexture(stateTexB);

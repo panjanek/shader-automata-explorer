@@ -16,5 +16,8 @@ namespace KernelAutomata.Models
 
         [FieldOffset(8)]
         public float angle;
+
+        [FieldOffset(12)]
+        public int species;
     }
 }

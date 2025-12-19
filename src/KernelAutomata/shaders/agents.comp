@@ -4,11 +4,23 @@
 
 layout(local_size_x = {LocalSizeX}) in;
 
+struct SpeciesConfig
+{
+    float velocity;
+    float turnSpeed;
+    float sensorAngle;
+    float sensorDistance;
+    int sensorSize;
+};
+
 struct ShaderConfig {
     int agentsCount;
     int width;
     int height;
     int time;
+    SpeciesConfig species_r;
+    SpeciesConfig species_g;
+    SpeciesConfig species_b;
 };
 
 struct Agent
@@ -90,8 +102,12 @@ float sense(Agent agent, float sensorAngle, float sensorDist, int sensorSize)
 
 //https://github.com/SebLague/Slime-Simulation/blob/main/Assets/Scripts/Slime/SlimeSim.compute
 
-float get_direction_change(Agent agent)
+void update_one(uint idx)
 {
+    Agent agent = agents[idx];
+
+    float angleDelta = 0;
+
     float turnSpeed = 0.5;
     float sensorAngle = 0.6;
     float sensorDist = 4.5;
@@ -104,20 +120,26 @@ float get_direction_change(Agent agent)
     float randomSteerStrength = scaleToRange01(random);
 
     if (senseForward > senseLeft && senseForward > senseRight){
-        return 0;
+        angleDelta = 0;
     }
     else if (senseForward < senseLeft && senseForward < senseRight) {
-        return (randomSteerStrength - 0.5) * 2 * turnSpeed;
+        angleDelta = (randomSteerStrength - 0.5) * 2 * turnSpeed;
     } else if (senseRight > senseLeft) {
-        return turnSpeed * randomSteerStrength;
+        angleDelta = turnSpeed * (0.75+0.5*randomSteerStrength);
     } 
     else if (senseLeft > senseRight){
-        return -turnSpeed * randomSteerStrength;
+        angleDelta = -turnSpeed * (0.75+0.5*randomSteerStrength);
     } 
     else
     {
-        return 0; //??
+        angleDelta = 0; //??
     }
+
+    agent.angle += angleDelta;   
+    float v = 0.5;
+    agent.position += vec2(v*cos(agent.angle),v*sin(agent.angle));
+    torus(agent.position);
+    agents[idx] = agent;
 }
 
 
@@ -127,24 +149,13 @@ void main()
 
     if (idx >=0 && idx < config.agentsCount) {
 
-        Agent agent = agents[idx];
-
-        agent.angle += get_direction_change(agent);
-
-        float v = 0.5;
-
-        agent.position += vec2(v*cos(agent.angle),v*sin(agent.angle));
-        torus(agent.position);
+        update_one(idx);
 
         // Write into texture (inject energy / state)
         imageStore(
             uStateImage,
-            ivec2(uint(agent.position.x), uint(agent.position.y)),
+            ivec2(uint(agents[idx].position.x), uint(agents[idx].position.y)),
             vec4(1.0, 0.0, 0.0, 0.0)
         );
-
-        // Store updated agent back to SSBO
-        agents[idx] = agent;
-    
     }
 }
