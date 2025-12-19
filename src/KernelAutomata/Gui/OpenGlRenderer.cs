@@ -143,7 +143,7 @@ namespace KernelAutomata.Gui
                 var r = 0.48 * Math.Min(width, height)* rnd.NextDouble();
                 agents[i].position = new Vector2((float)(width/2 + r * Math.Cos(angle)), (float)(height/2 + r*Math.Sin(angle)));
                 agents[i].angle = (float)(Math.PI + angle);
-                agents[i].species = 2;
+                agents[i].species = rnd.Next(3);
             }
             GL.BindBuffer(BufferTarget.ShaderStorageBuffer, agentsBuffer);
             GL.BufferSubData(BufferTarget.ShaderStorageBuffer, 0, shaderConfig.agentsCount * shaderAgentStrideSize, agents);

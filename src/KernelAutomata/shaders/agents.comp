@@ -135,21 +135,58 @@ void update_one(uint idx)
     float randomSteerStrength = scaleToRange01(random);
 
     float angleDelta = 0;
+
+    // attract to the same color
     if (senseForward > senseLeft && senseForward > senseRight){
-        angleDelta = 0;
+        angleDelta += 0;
     }
     else if (senseForward < senseLeft && senseForward < senseRight) {
-        angleDelta = (randomSteerStrength - 0.5) * 2 * spec.turnSpeed;
+        angleDelta += (randomSteerStrength - 0.5) * 2 * spec.turnSpeed;
     } else if (senseRight > senseLeft) {
-        angleDelta = spec.turnSpeed * (0.75+0.5*randomSteerStrength);
+        angleDelta += spec.turnSpeed * (0.75+0.5*randomSteerStrength);
     } 
     else if (senseLeft > senseRight){
-        angleDelta = -spec.turnSpeed * (0.75+0.5*randomSteerStrength);
+        angleDelta += -spec.turnSpeed * (0.75+0.5*randomSteerStrength);
     } 
     else
     {
-        angleDelta = 0; //??
+        angleDelta += 0; //??
     }
+
+    float senseLeftDifferent = max(senseLeftMulti.g, senseLeftMulti.b);
+    float senseForwardDifferent = max(senseForwardMulti.g, senseForwardMulti.b);
+    float senseRightDifferent = max(senseRightMulti.g, senseRightMulti.b);
+    if (agent.species == 1)
+    {
+        senseLeftDifferent = max(senseLeftMulti.r, senseLeftMulti.b);
+        senseForwardDifferent = max(senseForwardMulti.r, senseForwardMulti.b);
+        senseRightDifferent = max(senseRightMulti.r, senseRightMulti.b);
+    }
+    else if (agent.species == 2)
+    {
+        senseLeftDifferent = max(senseLeftMulti.r, senseLeftMulti.g);
+        senseForwardDifferent = max(senseForwardMulti.r, senseForwardMulti.g);
+        senseRightDifferent = max(senseRightMulti.r, senseRightMulti.g);
+    }
+
+    //repulse from different color
+    if (senseForwardDifferent > senseLeftDifferent && senseForwardDifferent > senseRightDifferent){
+        angleDelta += 0;
+    }
+    else if (senseForwardDifferent < senseLeftDifferent && senseForwardDifferent < senseRightDifferent) {
+        angleDelta += 0;
+    } else if (senseRightDifferent > senseLeftDifferent) {
+        angleDelta += -spec.turnSpeed * (0.75+0.5*randomSteerStrength) * 0.5;
+    } 
+    else if (senseLeftDifferent > senseRightDifferent){
+        angleDelta += spec.turnSpeed * (0.75+0.5*randomSteerStrength) * 0.5;
+    } 
+    else
+    {
+        angleDelta += 0; //??
+    }
+
+
 
     agent.angle += angleDelta;   
     agent.position += vec2(spec.velocity*cos(agent.angle),spec.velocity*sin(agent.angle));
