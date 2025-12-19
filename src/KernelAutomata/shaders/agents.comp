@@ -148,33 +148,34 @@ void update_one(uint idx)
     }
 
     uint random =  hash(uint(agent.position.y * config.width + agent.position.x) + hash(gl_GlobalInvocationID.x + config.time * 100000));
-    float randomSteerStrength = scaleToRange01(random);
+    float random01 = scaleToRange01(random);
+    float random1 = random01;
 
     float angleDelta = 0;
 
     // attract to the same color
     if (senseForward > senseLeft && senseForward > senseRight){
         
-
-
-            if (senseRightDifferent > senseLeftDifferent) {
-                angleDelta += -spec.turnSpeed * (0.75+0.5*randomSteerStrength);
-            } 
-            else if (senseLeftDifferent > senseRightDifferent){
-                angleDelta += spec.turnSpeed * (0.75+0.5*randomSteerStrength);
-            } 
-
+        //repulse
+        if (senseRightDifferent > senseLeftDifferent && senseRightDifferent > senseForwardDifferent) {
+            angleDelta += -spec.turnSpeed * random1;
+        } 
+        else if (senseLeftDifferent > senseRightDifferent && senseLeftDifferent > senseForwardDifferent){
+            angleDelta += spec.turnSpeed * random1;
+        }
 
     }
     else if (senseForward < senseLeft && senseForward < senseRight) {
-        angleDelta += (randomSteerStrength - 0.5) * 2 * spec.turnSpeed;
+        angleDelta += (random01 - 0.5) * 2 * spec.turnSpeed * 2;
+
     } else if (senseRight > senseLeft) {
-        angleDelta += spec.turnSpeed * (0.75+0.5*randomSteerStrength);
+        angleDelta += spec.turnSpeed * random1;
     } 
     else if (senseLeft > senseRight){
-        angleDelta += -spec.turnSpeed * (0.75+0.5*randomSteerStrength);
-    } 
+        angleDelta += -spec.turnSpeed * random1;
+    }
 
+    
 
 
 
