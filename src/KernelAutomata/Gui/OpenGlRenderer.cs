@@ -81,8 +81,20 @@ namespace KernelAutomata.Gui
             shaderConfig.width = width;
             shaderConfig.height = height;
             shaderConfig.species_r = new SpeciesConfig();
+
             shaderConfig.species_g = new SpeciesConfig();
+            shaderConfig.species_g.velocity = 1.0f;
+            shaderConfig.species_g.sensorDistance = 10.0f;
+            shaderConfig.species_g.sensorSize = 2;
+            shaderConfig.species_g.turnSpeed = 0.8f;
+            shaderConfig.species_g.sensorAngle = 0.3f;
+
             shaderConfig.species_b = new SpeciesConfig();
+            shaderConfig.species_b.velocity = 1.0f;
+            shaderConfig.species_b.sensorDistance = 10.0f;
+            shaderConfig.species_b.sensorSize = 2;
+            shaderConfig.species_b.turnSpeed = 0.8f;
+            shaderConfig.species_b.sensorAngle = 0.3f;
 
             host = new System.Windows.Forms.Integration.WindowsFormsHost();
             host.Visibility = Visibility.Visible;
@@ -142,7 +154,7 @@ namespace KernelAutomata.Gui
                 var angle = rnd.NextDouble()*Math.PI*2;
                 var r = 0.48 * Math.Min(width, height)* rnd.NextDouble();
                 agents[i].position = new Vector2((float)(width/2 + r * Math.Cos(angle)), (float)(height/2 + r*Math.Sin(angle)));
-                agents[i].angle = (float)(Math.PI + angle);
+                agents[i].angle = -(float)(Math.PI + angle);
                 agents[i].species = rnd.Next(3);
             }
             GL.BindBuffer(BufferTarget.ShaderStorageBuffer, agentsBuffer);
