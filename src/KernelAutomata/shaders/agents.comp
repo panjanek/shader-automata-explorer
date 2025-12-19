@@ -1,0 +1,150 @@
+﻿#version 430 core
+
+#pragma optimize(on)
+
+layout(local_size_x = {LocalSizeX}) in;
+
+struct ShaderConfig {
+    int agentsCount;
+    int width;
+    int height;
+    int time;
+};
+
+struct Agent
+{
+    vec2 position;
+    float angle;
+};
+
+layout(std430, binding = 0) buffer ConfigBuffer {
+    ShaderConfig config;
+};
+
+layout(std430, binding = 1) buffer OutputBuffer {
+    Agent agents[];
+};
+
+layout(rgba32f, binding = 3) uniform image2D uStateImage;
+
+void torus(inout vec2 pos)
+{
+    if (pos.x > config.width)
+        pos.x -= config.width;
+    else if (pos.x < 0)
+        pos.x += config.width;
+
+    if (pos.y > config.height)
+        pos.y -= config.height;
+    else if (pos.y < 0)
+        pos.y += config.height;
+}
+
+void itorus(inout ivec2 pos)
+{
+    if (pos.x > config.width)
+        pos.x -= config.width;
+    else if (pos.x < 0)
+        pos.x += config.width;
+
+    if (pos.y > config.height)
+        pos.y -= config.height;
+    else if (pos.y < 0)
+        pos.y += config.height;
+}
+
+uint hash(uint state)
+{
+    state ^= 2747636419u;
+    state *= 2654435769u;
+    state ^= state >> 16;
+    state *= 2654435769u;
+    state ^= state >> 16;
+    state *= 2654435769u;
+    return state;
+}
+
+float scaleToRange01(uint state)
+{
+    return state / 4294967295.0;
+}
+
+float sense(Agent agent, float sensorAngle, float sensorDist, int sensorSize)
+{
+    float sensingAngle = agent.angle + sensorAngle;
+    vec2 sensingDir = vec2(cos(sensingAngle),sin(sensingAngle));
+    vec2 sensingCenter = agent.position + sensingDir * sensorDist;
+    ivec2 center = ivec2(int(sensingCenter.x),int(sensingCenter.y));
+    float sum = 0;
+    for(int offsetX=-sensorSize; offsetX <= sensorSize; offsetX++)
+        for(int offsetY=-sensorSize; offsetY <= sensorSize; offsetY++)
+        {
+            ivec2 sensePixel = center + ivec2(offsetX, offsetY);
+            itorus(sensePixel);
+            float senseValue = imageLoad(uStateImage, sensePixel).r;
+            sum += senseValue;
+        }
+
+    return sum;
+}
+
+//https://github.com/SebLague/Slime-Simulation/blob/main/Assets/Scripts/Slime/SlimeSim.compute
+
+float get_direction_change(Agent agent)
+{
+    float turnSpeed = 0.5;
+    float sensorAngle = 0.6;
+    float sensorDist = 4.5;
+
+    float senseLeft = sense(agent, -sensorAngle, sensorDist, 1);
+    float senseForward = sense(agent, 0, 3, 1);
+    float senseRight = sense(agent, sensorAngle, sensorDist, 1);
+
+    uint random =  hash(uint(agent.position.y * config.width + agent.position.x) + hash(gl_GlobalInvocationID.x + config.time * 100000));
+    float randomSteerStrength = scaleToRange01(random);
+
+    if (senseForward > senseLeft && senseForward > senseRight){
+        return 0;
+    }
+    else if (senseForward < senseLeft && senseForward < senseRight) {
+        return (randomSteerStrength - 0.5) * 2 * turnSpeed;
+    } else if (senseRight > senseLeft) {
+        return turnSpeed * randomSteerStrength;
+    } 
+    else if (senseLeft > senseRight){
+        return -turnSpeed * randomSteerStrength;
+    } 
+    else
+    {
+        return 0; //??
+    }
+}
+
+
+void main()
+{
+    uint idx = gl_GlobalInvocationID.x;
+
+    if (idx >=0 && idx < config.agentsCount) {
+
+        Agent agent = agents[idx];
+
+        agent.angle += get_direction_change(agent);
+
+        float v = 0.5;
+
+        agent.position += vec2(v*cos(agent.angle),v*sin(agent.angle));
+        torus(agent.position);
+
+        // Write into texture (inject energy / state)
+        imageStore(
+            uStateImage,
+            ivec2(uint(agent.position.x), uint(agent.position.y)),
+            vec4(1.0, 0.0, 0.0, 0.0)
+        );
+
+        // Store updated agent back to SSBO
+        agents[idx] = agent;
+    
+    }
+}
