@@ -27,6 +27,7 @@ struct Agent
 {
     vec2 position;
     float angle;
+    uint species;
 };
 
 layout(std430, binding = 0) buffer ConfigBuffer {
@@ -105,30 +106,30 @@ float sense(Agent agent, float sensorAngle, float sensorDist, int sensorSize)
 void update_one(uint idx)
 {
     Agent agent = agents[idx];
+    SpeciesConfig spec = config.species_r;
+    if (agent.species == 1)
+        spec = config.species_g;
+    else if (agent.species == 2)
+        spec = config.species_b;
 
-    float angleDelta = 0;
-
-    float turnSpeed = 0.5;
-    float sensorAngle = 0.6;
-    float sensorDist = 4.5;
-
-    float senseLeft = sense(agent, -sensorAngle, sensorDist, 1);
-    float senseForward = sense(agent, 0, 3, 1);
-    float senseRight = sense(agent, sensorAngle, sensorDist, 1);
+    float senseLeft = sense(agent, -spec.sensorAngle, spec.sensorDistance, spec.sensorSize);
+    float senseForward = sense(agent, 0, spec.sensorDistance, spec.sensorSize);
+    float senseRight = sense(agent, spec.sensorAngle, spec.sensorDistance, spec.sensorSize);
 
     uint random =  hash(uint(agent.position.y * config.width + agent.position.x) + hash(gl_GlobalInvocationID.x + config.time * 100000));
     float randomSteerStrength = scaleToRange01(random);
 
+    float angleDelta = 0;
     if (senseForward > senseLeft && senseForward > senseRight){
         angleDelta = 0;
     }
     else if (senseForward < senseLeft && senseForward < senseRight) {
-        angleDelta = (randomSteerStrength - 0.5) * 2 * turnSpeed;
+        angleDelta = (randomSteerStrength - 0.5) * 2 * spec.turnSpeed;
     } else if (senseRight > senseLeft) {
-        angleDelta = turnSpeed * (0.75+0.5*randomSteerStrength);
+        angleDelta = spec.turnSpeed * (0.75+0.5*randomSteerStrength);
     } 
     else if (senseLeft > senseRight){
-        angleDelta = -turnSpeed * (0.75+0.5*randomSteerStrength);
+        angleDelta = -spec.turnSpeed * (0.75+0.5*randomSteerStrength);
     } 
     else
     {
@@ -136,8 +137,7 @@ void update_one(uint idx)
     }
 
     agent.angle += angleDelta;   
-    float v = 0.5;
-    agent.position += vec2(v*cos(agent.angle),v*sin(agent.angle));
+    agent.position += vec2(spec.velocity*cos(agent.angle),spec.velocity*sin(agent.angle));
     torus(agent.position);
     agents[idx] = agent;
 }
