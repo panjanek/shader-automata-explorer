@@ -1,5 +1,5 @@
 # Automata Explorer
-Exploring various pixel update patterns.
+Exploring various pixel update patterns of slime simulation scheme
 Based on:
 
 ## Videos
