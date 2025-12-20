@@ -10,6 +10,13 @@ namespace KernelAutomata.Models
     [StructLayout(LayoutKind.Explicit, Size = 76)]
     public struct ShaderConfig
     {
+        public ShaderConfig()
+        {
+            species_r = new SpeciesConfig();
+            species_g = new SpeciesConfig();
+            species_b = new SpeciesConfig();
+        }
+
         [FieldOffset(0)]
         public int agentsCount;
 

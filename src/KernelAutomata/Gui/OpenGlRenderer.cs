@@ -69,6 +69,14 @@ namespace KernelAutomata.Gui
 
         private ShaderConfig shaderConfig;
 
+        private float[] kernel5blur = new float[25] {
+        0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+        0.1f, 2.0f, 30.0f, 2.0f, 0.0f,
+        0.0f, 1.0f, 2.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
+   
+
         private Random rnd = new Random(123);
 
         public OpenGlRenderer(Panel placeholder)
@@ -77,11 +85,12 @@ namespace KernelAutomata.Gui
             width = (int)placeholder.ActualWidth / 1;
             height = (int)placeholder.ActualHeight / 1;
 
+            shaderConfig = new ShaderConfig();
             shaderConfig.agentsCount = 1000000;
             shaderConfig.width = width;
             shaderConfig.height = height;
             shaderConfig.species_r = new SpeciesConfig();
-
+            /*
             shaderConfig.species_g = new SpeciesConfig();
             shaderConfig.species_g.velocity = 0.2f;
             shaderConfig.species_g.sensorDistance = 5.0f;
@@ -95,7 +104,7 @@ namespace KernelAutomata.Gui
             shaderConfig.species_b.sensorSize = 2;
             shaderConfig.species_b.turnSpeed = 3.2f;
             shaderConfig.species_b.sensorAngle = 0.3f;
-
+            */
             host = new System.Windows.Forms.Integration.WindowsFormsHost();
             host.Visibility = Visibility.Visible;
             host.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
@@ -153,7 +162,7 @@ namespace KernelAutomata.Gui
             {
                 agents[i].species = rnd.Next(3);
                 var angle = rnd.NextDouble()*Math.PI*2;
-                var r = 0.48 * Math.Min(width, height)* rnd.NextDouble();
+                var r = 0.08 * Math.Min(width, height)* rnd.NextDouble();
                 agents[i].position = new Vector2((float)(width/2 + (agents[i].species*150) + r * Math.Cos(angle)), (float)(height/2 + r*Math.Sin(angle)));
                 agents[i].angle = (float)(Math.PI + angle);
 
@@ -168,37 +177,22 @@ namespace KernelAutomata.Gui
             updateProgram = ShaderUtil.CreateRenderProgram("fullscreen.vert", "update.frag");
             displayProgram = ShaderUtil.CreateRenderProgram("fullscreen.vert", "display.frag");
 
-            stateTexA = CreateStateTexture();
-            stateTexB = CreateStateTexture();
+            stateTexA = TextureUtil.CreateStateTexture(width, height);
+            stateTexB = TextureUtil.CreateStateTexture(width, height);
 
-            float[] initialState = new float[width * height * 4];
-            /*
-            for (int y = 0; y < height; y++)
-            {
-                for (int x = 0; x < width; x++)
-                {
-                    int i = (y * width + x) * 4;
+            //upload initial texture - empty
+            float[] initialState = new float[width * height * 4]; 
+            GL.BindTexture(TextureTarget.Texture2D, stateTexA);
+            GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, width, height, PixelFormat.Rgba, PixelType.Float, initialState);
 
-                    float v = (float)Random.Shared.NextDouble();
-                    if (Math.Sqrt((x - width / 3) * (x - width / 3) + (y - height / 2) * (y - height / 2)) > Math.Min(width, height)/2)
-                        v = 0;
-                    initialState[i + 0] = v;   // R
-                    initialState[i + 1] = 0f;  // G
-                    initialState[i + 2] = 0f;  // B
-                    initialState[i + 3] = 0f;  // A
-                }
-            }*/
-            UploadInitialState(stateTexA, initialState);
-
-            fboA = CreateFboForTexture(stateTexA);
-            fboB = CreateFboForTexture(stateTexB);
+            fboA = TextureUtil.CreateFboForTexture(stateTexA);
+            fboB = TextureUtil.CreateFboForTexture(stateTexB);
 
             // Initialize uniforms
             GL.UseProgram(updateProgram);
             prevStateLocation = GL.GetUniformLocation(updateProgram, "uPrevState");
             texelSizeLocation = GL.GetUniformLocation(updateProgram, "uTexelSize");
             GL.Uniform1(prevStateLocation, 0);
-
             GL.UseProgram(displayProgram);
             stateLocation = GL.GetUniformLocation(displayProgram, "uState");
             GL.Uniform1(stateLocation, 0);
@@ -210,127 +204,7 @@ namespace KernelAutomata.Gui
             if (stateLocation == -1)
                 throw new Exception("Uniform uState not found.");
 
-            InitQuad();
-
-
-
-        }
-
-        private void UploadInitialState(int texture, float[] data)
-        {
-            GL.BindTexture(TextureTarget.Texture2D, texture);
-
-            GL.TexSubImage2D(
-                TextureTarget.Texture2D,
-                0,
-                0, 0,
-                width,
-                height,
-                PixelFormat.Rgba,
-                PixelType.Float,
-                data
-            );
-        }
-
-        private void InitQuad()
-        {
-            float[] quad =
-                {
-                    -1f, -1f,
-                     1f, -1f,
-                     1f,  1f,
-                    -1f, -1f,
-                     1f,  1f,
-                    -1f,  1f
-                };
-
-            vao = GL.GenVertexArray();
-            vbo = GL.GenBuffer();
-
-            GL.BindVertexArray(vao);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
-            GL.BufferData(BufferTarget.ArrayBuffer, quad.Length * sizeof(float), quad, BufferUsageHint.StaticDraw);
-
-            GL.EnableVertexAttribArray(0);
-            GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 2 * sizeof(float), 0);
-
-            GL.BindVertexArray(0);
-        }
-        private int CreateStateTexture()
-        {
-            int tex = GL.GenTexture();
-            GL.BindTexture(TextureTarget.Texture2D, tex);
-
-            GL.TexImage2D(
-                TextureTarget.Texture2D,
-                0,
-                PixelInternalFormat.Rgba32f,
-                width,
-                height,
-                0,
-                PixelFormat.Rgba,
-                PixelType.Float,
-                IntPtr.Zero
-            );
-
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
-
-            // IMPORTANT: no mipmaps
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureBaseLevel, 0);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, 0);
-
-            return tex;
-        }
-
-        public int CreateFboForTexture(int texture)
-        {
-            int fbo = GL.GenFramebuffer();
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, fbo);
-
-            GL.FramebufferTexture2D(
-                FramebufferTarget.Framebuffer,
-                FramebufferAttachment.ColorAttachment0,
-                TextureTarget.Texture2D,
-                texture,
-                0
-            );
-
-            GL.DrawBuffers(1, new[] { DrawBuffersEnum.ColorAttachment0 });
-
-            var status = GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer);
-            if (status != FramebufferErrorCode.FramebufferComplete)
-                throw new Exception($"FBO incomplete: {status}");
-
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-            return fbo;
-        }
-
-        private void GlControl_Paint(object? sender, PaintEventArgs e)
-        {
-
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-            GL.Viewport(0, 0, glControl.Width, glControl.Height);
-
-            GL.UseProgram(displayProgram);
-
-            GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, stateTexA);
-
-            RenderQuad();
-
-
-            glControl.SwapBuffers();
-            frameCounter++;
-        }
-
-        private void RenderQuad()
-        {
-            GL.BindVertexArray(vao);
-            GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
-            GL.BindVertexArray(0);
+            (vao, vbo) = PolygonUtil.CreateQuad();
         }
 
         public void Draw()
@@ -353,7 +227,6 @@ namespace KernelAutomata.Gui
             GL.DispatchCompute(dispatchGroupsX, 1, 1);
             GL.MemoryBarrier(MemoryBarrierFlags.ShaderStorageBarrierBit);
 
-
             //run update
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, fboB);
             GL.Viewport(0, 0, width, height);
@@ -361,13 +234,25 @@ namespace KernelAutomata.Gui
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, stateTexA);
             GL.Uniform2(texelSizeLocation, 1.0f / width, 1.0f / height);
-            RenderQuad();
+            PolygonUtil.RenderTriangles(vao);
 
             // Swap
             (stateTexA, stateTexB) = (stateTexB, stateTexA);
             (fboA, fboB) = (fboB, fboA);
-
             glControl.Invalidate();
+        }
+
+
+        private void GlControl_Paint(object? sender, PaintEventArgs e)
+        {
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            GL.Viewport(0, 0, glControl.Width, glControl.Height);
+            GL.UseProgram(displayProgram);
+            GL.ActiveTexture(TextureUnit.Texture0);
+            GL.BindTexture(TextureTarget.Texture2D, stateTexA);
+            PolygonUtil.RenderTriangles(vao);
+            glControl.SwapBuffers();
+            frameCounter++;
         }
     }
 }
