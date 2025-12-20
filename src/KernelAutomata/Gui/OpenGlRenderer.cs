@@ -151,7 +151,7 @@ namespace KernelAutomata.Gui
             var agents = new Agent[shaderConfig.agentsCount];
             for(int i=0; i<agents.Length; i++)
             {
-                agents[i].species = rnd.Next(1);
+                agents[i].species = rnd.Next(2);
                 var angle = rnd.NextDouble()*Math.PI*2;
                 var r = 0.48 * Math.Min(width, height)* rnd.NextDouble();
                 agents[i].position = new Vector2((float)(width/2 + (agents[i].species*150) + r * Math.Cos(angle)), (float)(height/2 + r*Math.Sin(angle)));

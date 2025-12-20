@@ -111,40 +111,40 @@ void update_one(uint idx)
     else if (agent.species == 2)
         spec = config.species_b;
 
-    vec4 senseLeftMulti = sense(agent, -spec.sensorAngle, spec.sensorDistance, spec.sensorSize);
-    vec4 senseForwardMulti = sense(agent, 0, spec.sensorDistance, spec.sensorSize);
-    vec4 senseRightMulti = sense(agent, spec.sensorAngle, spec.sensorDistance, spec.sensorSize);
+    vec4 sense_left = sense(agent, -spec.sensorAngle, spec.sensorDistance, spec.sensorSize);
+    vec4 sense_forward = sense(agent, 0, spec.sensorDistance, spec.sensorSize);
+    vec4 sense_right = sense(agent, spec.sensorAngle, spec.sensorDistance, spec.sensorSize);
 
-    float senseLeft = senseLeftMulti.r;
-    float senseForward = senseForwardMulti.r;
-    float senseRight = senseRightMulti.r;
+    float left = sense_left.r;
+    float forward = sense_forward.r;
+    float right = sense_right.r;
     if (agent.species == 1)
     {
-        senseLeft = senseLeftMulti.g;
-        senseForward = senseForwardMulti.g;
-        senseRight = senseRightMulti.g;
+        left = sense_left.g;
+        forward = sense_forward.g;
+        right = sense_right.g;
     }
     else if (agent.species == 2)
     {
-        senseLeft = senseLeftMulti.b;
-        senseForward = senseForwardMulti.b;
-        senseRight = senseRightMulti.b;
+        left = sense_left.b;
+        forward = sense_forward.b;
+        right = sense_right.b;
     }
 
-    float senseLeftDifferent = max(senseLeftMulti.g, senseLeftMulti.b);
-    float senseForwardDifferent = max(senseForwardMulti.g, senseForwardMulti.b);
-    float senseRightDifferent = max(senseRightMulti.g, senseRightMulti.b);
+    float left_opp = max(sense_left.g, sense_left.b);
+    float forward_opp = max(sense_forward.g, sense_forward.b);
+    float right_opp = max(sense_right.g, sense_right.b);
     if (agent.species == 1)
     {
-        senseLeftDifferent = max(senseLeftMulti.r, senseLeftMulti.b);
-        senseForwardDifferent = max(senseForwardMulti.r, senseForwardMulti.b);
-        senseRightDifferent = max(senseRightMulti.r, senseRightMulti.b);
+        left_opp = max(sense_left.r, sense_left.b);
+        forward_opp = max(sense_forward.r, sense_forward.b);
+        right_opp = max(sense_right.r, sense_right.b);
     }
     else if (agent.species == 2)
     {
-        senseLeftDifferent = max(senseLeftMulti.r, senseLeftMulti.g);
-        senseForwardDifferent = max(senseForwardMulti.r, senseForwardMulti.g);
-        senseRightDifferent = max(senseRightMulti.r, senseRightMulti.g);
+        left_opp = max(sense_left.r, sense_left.g);
+        forward_opp = max(sense_forward.r, sense_forward.g);
+        right_opp = max(sense_right.r, sense_right.g);
     }
 
     uint random =  hash(uint(agent.position.y * config.width + agent.position.x) + hash(gl_GlobalInvocationID.x + config.time * 100000));
@@ -153,38 +153,45 @@ void update_one(uint idx)
 
     float angleDelta = 0;
 
-    // attract to the same color
     
-    if (senseForward > senseLeft && senseForward > senseRight){
+
+
+
+    
+    if (forward > left && forward > right){
         
-        angleDelta += (random01 - 0.5) * 2 * spec.turnSpeed * 0.1; //?
+        //angleDelta += (random01 - 0.5) * 2 * spec.turnSpeed * 0.1; //small random
 
-
-    }
-    else if (senseForward < senseLeft && senseForward < senseRight) {
-        angleDelta += (random01 - 0.5) * 2 * spec.turnSpeed;
-
-    } else if (senseRight > senseLeft) {
-        angleDelta += spec.turnSpeed * random1;
-        //angleDelta += spec.turnSpeed*(senseRight - senseLeft)*random1;
-    } 
-    else if (senseLeft > senseRight){
-        angleDelta += -spec.turnSpeed * random1;
-        //angleDelta += -spec.turnSpeed*(senseLeft - senseRight) * random1;
-    }
-    
-    
-    /*
-            //repulse
-        if (senseRightDifferent > senseLeftDifferent && senseRightDifferent > senseForwardDifferent) {
+                    //repulse
+        if (right_opp > left_opp && right_opp > forward_opp) {
             angleDelta += -spec.turnSpeed * random1;
             //angleDelta += -spec.turnSpeed*(senseRightDifferent - senseLeftDifferent)*random1;
         } 
-        else if (senseLeftDifferent > senseRightDifferent && senseLeftDifferent > senseForwardDifferent){
+        else if (left_opp > right_opp && left_opp > forward_opp){
             angleDelta += spec.turnSpeed * random1;
             //angleDelta += spec.turnSpeed*(senseLeftDifferent - senseRightDifferent)*random1;
         }
-    */
+
+    }
+    else if (forward < left && forward < right) {
+        angleDelta += (random01 - 0.5) * 2 * spec.turnSpeed;    //random
+
+    } else if (right > left) {
+        angleDelta += spec.turnSpeed * random1;
+        //angleDelta += spec.turnSpeed*(senseRight - senseLeft)*random1;
+    } 
+    else if (left > right){
+        angleDelta += -spec.turnSpeed * random1;
+        //angleDelta += -spec.turnSpeed*(senseLeft - senseRight) * random1;
+    }
+
+
+
+    
+    
+    
+
+    
 
 
 
