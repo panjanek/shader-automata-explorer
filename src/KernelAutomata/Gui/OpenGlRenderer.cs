@@ -77,13 +77,13 @@ namespace KernelAutomata.Gui
             width = (int)placeholder.ActualWidth / 1;
             height = (int)placeholder.ActualHeight / 1;
 
-            shaderConfig.agentsCount = 500000;
+            shaderConfig.agentsCount = 1000000;
             shaderConfig.width = width;
             shaderConfig.height = height;
             shaderConfig.species_r = new SpeciesConfig();
 
             shaderConfig.species_g = new SpeciesConfig();
-            shaderConfig.species_g.velocity = 1.0f;
+            shaderConfig.species_g.velocity = 0.5f;
             shaderConfig.species_g.sensorDistance = 10.0f;
             shaderConfig.species_g.sensorSize = 2;
             shaderConfig.species_g.turnSpeed = 0.2f;
@@ -155,7 +155,7 @@ namespace KernelAutomata.Gui
                 var angle = rnd.NextDouble()*Math.PI*2;
                 var r = 0.48 * Math.Min(width, height)* rnd.NextDouble();
                 agents[i].position = new Vector2((float)(width/2 + (agents[i].species*150) + r * Math.Cos(angle)), (float)(height/2 + r*Math.Sin(angle)));
-                agents[i].angle = -(float)(Math.PI + angle);
+                agents[i].angle = (float)(Math.PI + angle);
 
                 //agents[i].position = new Vector2((float)(width * rnd.NextDouble()), (float)(height * rnd.NextDouble()));
                 //agents[i].angle = (float)(rnd.NextDouble() * 2 * Math.PI);

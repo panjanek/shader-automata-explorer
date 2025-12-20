@@ -156,7 +156,7 @@ void update_one(uint idx)
     
 
 
-
+    
     
     if (forward > left && forward > right){
         
@@ -184,6 +184,7 @@ void update_one(uint idx)
         angleDelta += -spec.turnSpeed * random1;
         //angleDelta += -spec.turnSpeed*(senseLeft - senseRight) * random1;
     }
+    
 
 
 
