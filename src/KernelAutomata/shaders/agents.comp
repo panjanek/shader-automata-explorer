@@ -154,31 +154,37 @@ void update_one(uint idx)
     float angleDelta = 0;
 
     // attract to the same color
+    
     if (senseForward > senseLeft && senseForward > senseRight){
         
-        //repulse
-        if (senseRightDifferent > senseLeftDifferent && senseRightDifferent > senseForwardDifferent) {
-            angleDelta += -spec.turnSpeed * random1;
-        } 
-        else if (senseLeftDifferent > senseRightDifferent && senseLeftDifferent > senseForwardDifferent){
-            angleDelta += spec.turnSpeed * random1;
-        }
+        angleDelta += (random01 - 0.5) * 2 * spec.turnSpeed * 0.1; //?
+
 
     }
     else if (senseForward < senseLeft && senseForward < senseRight) {
-        angleDelta += (random01 - 0.5) * 2 * spec.turnSpeed * 2;
+        angleDelta += (random01 - 0.5) * 2 * spec.turnSpeed;
 
     } else if (senseRight > senseLeft) {
         angleDelta += spec.turnSpeed * random1;
+        //angleDelta += spec.turnSpeed*(senseRight - senseLeft)*random1;
     } 
     else if (senseLeft > senseRight){
         angleDelta += -spec.turnSpeed * random1;
+        //angleDelta += -spec.turnSpeed*(senseLeft - senseRight) * random1;
     }
-
     
-
-
-
+    
+    /*
+            //repulse
+        if (senseRightDifferent > senseLeftDifferent && senseRightDifferent > senseForwardDifferent) {
+            angleDelta += -spec.turnSpeed * random1;
+            //angleDelta += -spec.turnSpeed*(senseRightDifferent - senseLeftDifferent)*random1;
+        } 
+        else if (senseLeftDifferent > senseRightDifferent && senseLeftDifferent > senseForwardDifferent){
+            angleDelta += spec.turnSpeed * random1;
+            //angleDelta += spec.turnSpeed*(senseLeftDifferent - senseRightDifferent)*random1;
+        }
+    */
 
 
 
