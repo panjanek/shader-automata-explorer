@@ -70,16 +70,8 @@ namespace KernelAutomata.Gui
 
         private int kernelLocation;
 
-        private ShaderConfig shaderConfig;
+        private Simulation sim;
 
-        private float[] blurKernel = new float[25] {
-            0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-            0.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-            0.1f, 2.0f, 30.0f, 2.0f, 0.0f,
-            0.0f, 1.0f, 2.0f, 1.0f, 0.0f,
-            0.0f, 0.0f, 0.0f, 0.0f, 0.0f 
-        };
-  
 
         private Random rnd = new Random(123);
 
@@ -88,32 +80,8 @@ namespace KernelAutomata.Gui
             this.placeholder = placeholder;
             width = (int)placeholder.ActualWidth / 1;
             height = (int)placeholder.ActualHeight / 1;
-
-            MathUtil.Normalize(blurKernel, 0.98f);
-            shaderConfig = new ShaderConfig();
-            shaderConfig.agentsCount = 1000000;
-            shaderConfig.width = width;
-            shaderConfig.height = height;
-
-            shaderConfig.species_g.velocity *= 0.8f;
-            shaderConfig.species_g.turnSpeed *= 1.5f;
-            shaderConfig.species_g.turnBackTreshold = 1.0f;
-
-            /*
-            shaderConfig.species_g = new SpeciesConfig();
-            shaderConfig.species_g.velocity = 0.2f;
-            shaderConfig.species_g.sensorDistance = 5.0f;
-            shaderConfig.species_g.sensorSize = 2;
-            shaderConfig.species_g.turnSpeed = 2.8f;
-            shaderConfig.species_g.sensorAngle = 0.4f;
-
-            shaderConfig.species_b = new SpeciesConfig();
-            shaderConfig.species_b.velocity = 2.0f;
-            shaderConfig.species_b.sensorDistance = 10.0f;
-            shaderConfig.species_b.sensorSize = 2;
-            shaderConfig.species_b.turnSpeed = 3.2f;
-            shaderConfig.species_b.sensorAngle = 0.3f;
-            */
+            sim = new Simulation(width, height);
+            
             host = new System.Windows.Forms.Integration.WindowsFormsHost();
             host.Visibility = Visibility.Visible;
             host.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
@@ -162,11 +130,11 @@ namespace KernelAutomata.Gui
             GL.GenBuffers(1, out agentsBuffer);
             GL.BindBuffer(BufferTarget.ShaderStorageBuffer, agentsBuffer);
             int shaderAgentStrideSize = Marshal.SizeOf<Agent>();
-            GL.BufferData(BufferTarget.ShaderStorageBuffer, shaderConfig.agentsCount * shaderAgentStrideSize, IntPtr.Zero, BufferUsageHint.DynamicDraw);
+            GL.BufferData(BufferTarget.ShaderStorageBuffer, sim.shaderConfig.agentsCount * shaderAgentStrideSize, IntPtr.Zero, BufferUsageHint.DynamicDraw);
             GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 1, agentsBuffer);
 
             //upload initial agents
-            var agents = new Agent[shaderConfig.agentsCount];
+            var agents = new Agent[sim.shaderConfig.agentsCount];
             for(int i=0; i<agents.Length; i++)
             {
                 agents[i].species = rnd.Next(2);
@@ -180,7 +148,7 @@ namespace KernelAutomata.Gui
 
             }
             GL.BindBuffer(BufferTarget.ShaderStorageBuffer, agentsBuffer);
-            GL.BufferSubData(BufferTarget.ShaderStorageBuffer, 0, shaderConfig.agentsCount * shaderAgentStrideSize, agents);
+            GL.BufferSubData(BufferTarget.ShaderStorageBuffer, 0, sim.shaderConfig.agentsCount * shaderAgentStrideSize, agents);
 
             computeProgram = ShaderUtil.CompileAndLinkComputeShader("agents.comp");
             updateProgram = ShaderUtil.CreateRenderProgram("fullscreen.vert", "update.frag");
@@ -223,15 +191,15 @@ namespace KernelAutomata.Gui
                 return;
 
             //upload config
-            shaderConfig.time++;
+            sim.shaderConfig.time++;
             int configSizeInBytes = Marshal.SizeOf<ShaderConfig>();
             GL.BindBuffer(BufferTarget.ShaderStorageBuffer, ubo);
-            GL.BufferSubData(BufferTarget.ShaderStorageBuffer, IntPtr.Zero, Marshal.SizeOf<ShaderConfig>(), ref shaderConfig);
+            GL.BufferSubData(BufferTarget.ShaderStorageBuffer, IntPtr.Zero, Marshal.SizeOf<ShaderConfig>(), ref sim.shaderConfig);
 
             //run compute
             GL.UseProgram(computeProgram);
             GL.BindImageTexture(3, stateTexA, 0, false, 0, TextureAccess.ReadWrite, SizedInternalFormat.Rgba32f);
-            int dispatchGroupsX = (shaderConfig.agentsCount + ShaderUtil.LocalSizeX - 1) / ShaderUtil.LocalSizeX;
+            int dispatchGroupsX = (sim.shaderConfig.agentsCount + ShaderUtil.LocalSizeX - 1) / ShaderUtil.LocalSizeX;
             if (dispatchGroupsX > maxGroupsX)
                 dispatchGroupsX = maxGroupsX;
             GL.DispatchCompute(dispatchGroupsX, 1, 1);
@@ -244,7 +212,7 @@ namespace KernelAutomata.Gui
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, stateTexA);
             GL.Uniform2(texelSizeLocation, 1.0f / width, 1.0f / height);
-            GL.Uniform1(kernelLocation, 25, blurKernel);
+            GL.Uniform1(kernelLocation, 25, sim.blurKernel);
             PolygonUtil.RenderTriangles(vao);
 
             // Swap

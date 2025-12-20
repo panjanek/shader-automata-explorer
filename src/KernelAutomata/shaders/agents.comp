@@ -153,11 +153,13 @@ void update_one(uint idx)
         right_opp = max(sense_right.r, sense_right.g);
     }
 
-    uint random =  hash(uint(agent.position.y * config.width + agent.position.x) + hash(gl_GlobalInvocationID.x + config.time * 100000));
+    uint random =  hash(uint(agent.position.y * config.width + agent.position.x) + hash(gl_GlobalInvocationID.x + config.time * 100037));
     float random01 = scaleToRange01(random);
     float random1 = random01 * 0.3 + 0.85;
 
     float angleDelta = 0;
+
+    // compute attraction forces
     float sense_max = max(forward, max(left, right));
     if (forward > left && forward > right)
     {
@@ -172,7 +174,11 @@ void update_one(uint idx)
         angleDelta += spec.turnSpeed * random1 * (right - left);    //attract
     }
 
-    //repulse
+    random =  hash(uint(agent.position.y * config.width + agent.position.x) + hash(gl_GlobalInvocationID.x + config.time * 30023));
+    random01 = scaleToRange01(random);
+    random1 = random01 * 0.3 + 0.85;
+
+    //compute repulse forces
     float sense_max_opp = max(forward_opp, max(left_opp, right_opp));
     if (sense_max_opp > spec.repulsionTreshold)
     {
@@ -188,6 +194,11 @@ void update_one(uint idx)
         angleDelta -= repForce;
     }
 
+    random =  hash(uint(agent.position.y * config.width + agent.position.x) + hash(gl_GlobalInvocationID.x + config.time * 30023));
+    random01 = scaleToRange01(random);
+    random1 = random01 * 0.3 + 0.85;
+
+    //check if shiuld turn around
     if (forward_opp > forward && random01 < spec.turnBackTreshold)
         angleDelta = M_PI;
     
