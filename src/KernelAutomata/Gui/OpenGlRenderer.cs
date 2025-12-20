@@ -12,6 +12,7 @@ using System.Windows.Media.Media3D;
 using System.Windows.Media.TextFormatting;
 using KernelAutomata.Models;
 using OpenTK;
+using OpenTK.Compute.OpenCL;
 using OpenTK.GLControl;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
@@ -67,15 +68,18 @@ namespace KernelAutomata.Gui
 
         private int stateLocation;
 
+        private int kernelLocation;
+
         private ShaderConfig shaderConfig;
 
-        private float[] kernel5blur = new float[25] {
-        0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-        0.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-        0.1f, 2.0f, 30.0f, 2.0f, 0.0f,
-        0.0f, 1.0f, 2.0f, 1.0f, 0.0f,
-        0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
-   
+        private float[] blurKernel = new float[25] {
+            0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+            0.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+            0.1f, 2.0f, 30.0f, 2.0f, 0.0f,
+            0.0f, 1.0f, 2.0f, 1.0f, 0.0f,
+            0.0f, 0.0f, 0.0f, 0.0f, 0.0f 
+        };
+  
 
         private Random rnd = new Random(123);
 
@@ -85,6 +89,7 @@ namespace KernelAutomata.Gui
             width = (int)placeholder.ActualWidth / 1;
             height = (int)placeholder.ActualHeight / 1;
 
+            MathUtil.Normalize(blurKernel, 0.98f);
             shaderConfig = new ShaderConfig();
             shaderConfig.agentsCount = 1000000;
             shaderConfig.width = width;
@@ -160,7 +165,7 @@ namespace KernelAutomata.Gui
             var agents = new Agent[shaderConfig.agentsCount];
             for(int i=0; i<agents.Length; i++)
             {
-                agents[i].species = rnd.Next(3);
+                agents[i].species = rnd.Next(2);
                 var angle = rnd.NextDouble()*Math.PI*2;
                 var r = 0.08 * Math.Min(width, height)* rnd.NextDouble();
                 agents[i].position = new Vector2((float)(width/2 + (agents[i].species*150) + r * Math.Cos(angle)), (float)(height/2 + r*Math.Sin(angle)));
@@ -192,6 +197,7 @@ namespace KernelAutomata.Gui
             GL.UseProgram(updateProgram);
             prevStateLocation = GL.GetUniformLocation(updateProgram, "uPrevState");
             texelSizeLocation = GL.GetUniformLocation(updateProgram, "uTexelSize");
+            kernelLocation = GL.GetUniformLocation(updateProgram, "uKernel");
             GL.Uniform1(prevStateLocation, 0);
             GL.UseProgram(displayProgram);
             stateLocation = GL.GetUniformLocation(displayProgram, "uState");
@@ -234,6 +240,7 @@ namespace KernelAutomata.Gui
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, stateTexA);
             GL.Uniform2(texelSizeLocation, 1.0f / width, 1.0f / height);
+            GL.Uniform1(kernelLocation, 25, blurKernel);
             PolygonUtil.RenderTriangles(vao);
 
             // Swap

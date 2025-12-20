@@ -3,33 +3,13 @@
 uniform sampler2D uPrevState;
 uniform vec2 uTexelSize;         // (1.0/width, 1.0/height)
 uniform vec2 uScreenSize;
+uniform float uKernel[25];
 
 layout(location = 0) out vec4 outState;
-
-
-float inverted_bell(float x)
-{
-    return x*x / (x*x + 0.3);
-}
-
-float sigmoid(float x)
-{
-    return 0.75 + x / (2.0 * (1.0 + abs(x)));
-}
-
 
 void main()
 {
     vec2 uv = gl_FragCoord.xy * uTexelSize;
-
-    float kernel5blur[25] = float[](
-        0.0,   0.0,   0.0,   0.0,   0.0,
-        0.0,   1.0,   1.0,   1.0,   0.0,
-        0.1,   2.0,   30.0,   2.0,   0.0,
-        0.0,   1.0,   2.0,   1.0,   0.0,
-        0.0,   0.0,   0.0,   0.0,   0.0
-    );
-
     vec4 sum = vec4(0,0,0,0);
     float norm = 0;
     int k = 0;
@@ -53,12 +33,12 @@ void main()
                 src.y -= 1.0;
 
             vec4 current = texture(uPrevState, src);
-            norm += kernel5blur[k];
-            sum += current * kernel5blur[k++];
+            norm += uKernel[k];
+            sum += current * uKernel[k++];
         }
     }
 
-    vec4 result = 0.98*(sum/norm);//inverted_bell(sum);
+    vec4 result = sum;
     if (result.r < 0)
       result.r = 0;
     if (result.r > 1.0)
