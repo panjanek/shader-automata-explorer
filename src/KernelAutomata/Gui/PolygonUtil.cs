@@ -11,14 +11,15 @@ namespace KernelAutomata.Gui
     {
         public static (int, int) CreateQuad()
         {
+            float one = 1.0f;
             float[] quad =
                 {
-                    -1f, -1f,
-                     1f, -1f,
-                     1f,  1f,
-                    -1f, -1f,
-                     1f,  1f,
-                    -1f,  1f
+                    -one, -one,
+                     one, -one,
+                     one,  one,
+                    -one, -one,
+                     one,  one,
+                    -one,  one
                 };
             int vao = GL.GenVertexArray();
             int vbo = GL.GenBuffer();

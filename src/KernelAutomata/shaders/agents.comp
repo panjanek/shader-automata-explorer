@@ -14,6 +14,7 @@ struct SpeciesConfig
     float attractionTreshold;
     float repulsionTreshold;
     float turnBackTreshold;
+    float strayForce;
 };
 
 struct ShaderConfig {
@@ -163,15 +164,15 @@ void update_one(uint idx)
     float sense_max = max(forward, max(left, right));
     if (forward > left && forward > right)
     {
-        angleDelta += 0;              
+        angleDelta += (random01 - 0.5) * spec.strayForce;       // follow trail (add small random stray)
     }
     else if (sense_max < spec.attractionTreshold)
     {
-        angleDelta += (random01 - 0.5) * 2 * spec.turnSpeed;    //random because there is no strong trail
+        angleDelta += (random01 - 0.5) * 2 * spec.turnSpeed;    //no strong trail - move randomly
     }
     else
     {
-        angleDelta += spec.turnSpeed * random1 * (right - left);    //attract
+        angleDelta += spec.turnSpeed * random1 * (right - left);    //attract to trail
     }
 
     random =  hash(uint(agent.position.y * config.width + agent.position.x) + hash(gl_GlobalInvocationID.x + config.time * 30023));

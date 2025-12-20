@@ -23,6 +23,8 @@ namespace KernelAutomata.Models
 
         private Random rnd = new Random(123);
 
+        public int speciecCount;
+
         public Simulation(int width, int height)
         {
             MathUtil.Normalize(blurKernel, 0.98f);
@@ -34,6 +36,10 @@ namespace KernelAutomata.Models
             shaderConfig.species_g.velocity *= 1.3f;
             shaderConfig.species_g.turnSpeed *= 1.5f;
             shaderConfig.species_g.turnBackTreshold = 1.0f;
+
+            shaderConfig.species_b.strayForce = 3.0f;
+
+            speciecCount = 3;
         }
 
         public Agent[] CreateAgents()
@@ -41,7 +47,7 @@ namespace KernelAutomata.Models
             var agents = new Agent[shaderConfig.agentsCount];
             for (int i = 0; i < agents.Length; i++)
             {
-                agents[i].species = rnd.Next(3);
+                agents[i].species = rnd.Next(speciecCount);
                 var angle = rnd.NextDouble() * Math.PI * 2;
                 var r = 0.28 * Math.Min(shaderConfig.width, shaderConfig.height) * rnd.NextDouble();
                 agents[i].position = new Vector2((float)(shaderConfig.width / 2 + (agents[i].species * 250) + r * Math.Cos(angle)), (float)(shaderConfig.height / 2 + r * Math.Sin(angle)));
