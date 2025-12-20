@@ -28,7 +28,7 @@ namespace KernelAutomata.Models
             shaderConfig.width = width;
             shaderConfig.height = height;
 
-            shaderConfig.species_g.velocity *= 0.8f;
+            shaderConfig.species_g.velocity *= 1.3f;
             shaderConfig.species_g.turnSpeed *= 1.5f;
             shaderConfig.species_g.turnBackTreshold = 1.0f;
         }
