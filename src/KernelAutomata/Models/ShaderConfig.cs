@@ -38,7 +38,7 @@ namespace KernelAutomata.Models
         public SpeciesConfig()
         {
             velocity = 0.5f;
-            turnSpeed = 0.5f;
+            turnSpeed = 2f;
             sensorAngle = 0.6f;
             sensorDistance = 4.5f;
             sensorSize = 1;

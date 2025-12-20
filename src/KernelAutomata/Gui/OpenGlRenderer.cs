@@ -83,17 +83,17 @@ namespace KernelAutomata.Gui
             shaderConfig.species_r = new SpeciesConfig();
 
             shaderConfig.species_g = new SpeciesConfig();
-            shaderConfig.species_g.velocity = 0.5f;
-            shaderConfig.species_g.sensorDistance = 10.0f;
+            shaderConfig.species_g.velocity = 0.2f;
+            shaderConfig.species_g.sensorDistance = 5.0f;
             shaderConfig.species_g.sensorSize = 2;
-            shaderConfig.species_g.turnSpeed = 0.2f;
-            shaderConfig.species_g.sensorAngle = 0.3f;
+            shaderConfig.species_g.turnSpeed = 2.8f;
+            shaderConfig.species_g.sensorAngle = 0.4f;
 
             shaderConfig.species_b = new SpeciesConfig();
             shaderConfig.species_b.velocity = 2.0f;
             shaderConfig.species_b.sensorDistance = 10.0f;
             shaderConfig.species_b.sensorSize = 2;
-            shaderConfig.species_b.turnSpeed = 0.8f;
+            shaderConfig.species_b.turnSpeed = 3.2f;
             shaderConfig.species_b.sensorAngle = 0.3f;
 
             host = new System.Windows.Forms.Integration.WindowsFormsHost();
@@ -151,7 +151,7 @@ namespace KernelAutomata.Gui
             var agents = new Agent[shaderConfig.agentsCount];
             for(int i=0; i<agents.Length; i++)
             {
-                agents[i].species = rnd.Next(2);
+                agents[i].species = rnd.Next(3);
                 var angle = rnd.NextDouble()*Math.PI*2;
                 var r = 0.48 * Math.Min(width, height)* rnd.NextDouble();
                 agents[i].position = new Vector2((float)(width/2 + (agents[i].species*150) + r * Math.Cos(angle)), (float)(height/2 + r*Math.Sin(angle)));

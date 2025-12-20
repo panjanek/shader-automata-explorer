@@ -97,7 +97,8 @@ vec4 sense(Agent agent, float sensorAngle, float sensorDist, int sensorSize)
             sum += imageLoad(uStateImage, sensePixel);
         }
 
-    return sum;
+    uint r = 2*sensorSize+1;
+    return sum / (r*r);
 }
 
 //https://github.com/SebLague/Slime-Simulation/blob/main/Assets/Scripts/Slime/SlimeSim.compute
@@ -149,54 +150,30 @@ void update_one(uint idx)
 
     uint random =  hash(uint(agent.position.y * config.width + agent.position.x) + hash(gl_GlobalInvocationID.x + config.time * 100000));
     float random01 = scaleToRange01(random);
-    float random1 = random01;
+    float random1 = random01 * 0.3 + 0.85;
 
     float angleDelta = 0;
-
-    
-
-
-    
-    
-    if (forward > left && forward > right){
-        
-        //angleDelta += (random01 - 0.5) * 2 * spec.turnSpeed * 0.1; //small random
-
-                    //repulse
-        if (right_opp > left_opp && right_opp > forward_opp) {
-            angleDelta += -spec.turnSpeed * random1;
-            //angleDelta += -spec.turnSpeed*(senseRightDifferent - senseLeftDifferent)*random1;
-        } 
-        else if (left_opp > right_opp && left_opp > forward_opp){
-            angleDelta += spec.turnSpeed * random1;
-            //angleDelta += spec.turnSpeed*(senseLeftDifferent - senseRightDifferent)*random1;
-        }
-
+    float sense_max = max(forward, max(left, right));
+    if (forward > left && forward > right)
+    {
+        angleDelta += 0;              
     }
-    else if (forward < left && forward < right) {
-        angleDelta += (random01 - 0.5) * 2 * spec.turnSpeed;    //random
+    else if (sense_max < 0.2)    
+    {
+        angleDelta += (random01 - 0.5) * 2 * spec.turnSpeed;    //random because there is no strong trail
+    }
+    else
+    {
+        angleDelta += spec.turnSpeed * random1 * (right - left);    //attract
+    }
 
-    } else if (right > left) {
-        angleDelta += spec.turnSpeed * random1;
-        //angleDelta += spec.turnSpeed*(senseRight - senseLeft)*random1;
-    } 
-    else if (left > right){
-        angleDelta += -spec.turnSpeed * random1;
-        //angleDelta += -spec.turnSpeed*(senseLeft - senseRight) * random1;
+    //repulse
+    float sense_max_opp = max(forward_opp, max(left_opp, right_opp));
+    if (sense_max_opp > 0.1)
+    {
+        angleDelta -= spec.turnSpeed * random1 * (right_opp - left_opp);
     }
     
-
-
-
-    
-    
-    
-
-    
-
-
-
-
     agent.angle += angleDelta;   
     agent.position += vec2(spec.velocity*cos(agent.angle),spec.velocity*sin(agent.angle));
     torus(agent.position);
