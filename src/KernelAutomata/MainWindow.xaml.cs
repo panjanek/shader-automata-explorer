@@ -68,10 +68,10 @@ namespace KernelAutomata
             var now = DateTime.Now;
             var timespan = now - lastCheckTime;
             double frames = renderer.FrameCounter - lastCheckFrameCount;
-            if (timespan.TotalSeconds >= 0.0001)
+            if (timespan.TotalSeconds >= 0.0001 && renderer.FrameCounter>500)
             {
                 double fps = frames / timespan.TotalSeconds;
-                Title = $"KernelAutomata. " +
+                Title = $"ShaderExplorer. " +
                         $"fps:{fps.ToString("0.0")} ";
 
                 lastCheckFrameCount = renderer.FrameCounter;

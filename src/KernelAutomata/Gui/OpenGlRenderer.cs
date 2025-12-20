@@ -107,16 +107,15 @@ namespace KernelAutomata.Gui
             //setup required features
             GL.Enable(EnableCap.ProgramPointSize);
             GL.Disable(EnableCap.Blend);
-            GL.BlendEquation(OpenTK.Graphics.OpenGL.BlendEquationMode.FuncAdd);
             GL.Enable(EnableCap.PointSprite);
 
 
-            string version = GL.GetString(StringName.Version);
-            string renderer = GL.GetString(StringName.Renderer);
-            string glsl = GL.GetString(StringName.ShadingLanguageVersion);
+            string openglVer = GL.GetString(StringName.Version);
+            string rendererVer = GL.GetString(StringName.Renderer);
+            string glslVer = GL.GetString(StringName.ShadingLanguageVersion);
+            string versionInfo = $"ShaderExplorer. GPU info: openglVer:{openglVer}, rendererVer:{rendererVer}, glslVer:{glslVer}";
+            Application.Current.MainWindow.Title = versionInfo;
 
-            Console.WriteLine(version);
-            Console.WriteLine(glsl);
 
             // allocate space for ShaderConfig passed to each compute shader
             ubo = GL.GenBuffer();
@@ -134,19 +133,7 @@ namespace KernelAutomata.Gui
             GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 1, agentsBuffer);
 
             //upload initial agents
-            var agents = new Agent[sim.shaderConfig.agentsCount];
-            for(int i=0; i<agents.Length; i++)
-            {
-                agents[i].species = rnd.Next(2);
-                var angle = rnd.NextDouble()*Math.PI*2;
-                var r = 0.08 * Math.Min(width, height)* rnd.NextDouble();
-                agents[i].position = new Vector2((float)(width/2 + (agents[i].species*150) + r * Math.Cos(angle)), (float)(height/2 + r*Math.Sin(angle)));
-                agents[i].angle = (float)(Math.PI + angle);
-
-                //agents[i].position = new Vector2((float)(width * rnd.NextDouble()), (float)(height * rnd.NextDouble()));
-                //agents[i].angle = (float)(rnd.NextDouble() * 2 * Math.PI);
-
-            }
+            var agents = sim.CreateAgents();
             GL.BindBuffer(BufferTarget.ShaderStorageBuffer, agentsBuffer);
             GL.BufferSubData(BufferTarget.ShaderStorageBuffer, 0, sim.shaderConfig.agentsCount * shaderAgentStrideSize, agents);
 
