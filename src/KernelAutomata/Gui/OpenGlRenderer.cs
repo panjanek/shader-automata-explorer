@@ -89,7 +89,7 @@ namespace KernelAutomata.Gui
             width = (int)placeholder.ActualWidth / 1;
             height = (int)placeholder.ActualHeight / 1;
 
-            MathUtil.Normalize(blurKernel, 0.98f);
+            MathUtil.Normalize(blurKernel, 0.96f);
             shaderConfig = new ShaderConfig();
             shaderConfig.agentsCount = 1000000;
             shaderConfig.width = width;

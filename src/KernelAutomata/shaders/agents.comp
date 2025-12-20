@@ -175,9 +175,12 @@ void update_one(uint idx)
     {
         float repForce = spec.turnSpeed * random1 * (right_opp - left_opp);
 
+        /*
+        // assymetry
         float g = max(sense_forward.g, max(sense_left.g, sense_right.g));
         if (agent.species == 0 && sense_max_opp == g)
             repForce = - repForce;
+        */
 
         angleDelta -= repForce;
     }
