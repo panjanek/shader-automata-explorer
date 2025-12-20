@@ -89,12 +89,16 @@ namespace KernelAutomata.Gui
             width = (int)placeholder.ActualWidth / 1;
             height = (int)placeholder.ActualHeight / 1;
 
-            MathUtil.Normalize(blurKernel, 0.96f);
+            MathUtil.Normalize(blurKernel, 0.98f);
             shaderConfig = new ShaderConfig();
             shaderConfig.agentsCount = 1000000;
             shaderConfig.width = width;
             shaderConfig.height = height;
-            shaderConfig.species_r = new SpeciesConfig();
+
+            shaderConfig.species_g.velocity *= 0.8f;
+            shaderConfig.species_g.turnSpeed *= 1.5f;
+            shaderConfig.species_g.turnBackTreshold = 1.0f;
+
             /*
             shaderConfig.species_g = new SpeciesConfig();
             shaderConfig.species_g.velocity = 0.2f;

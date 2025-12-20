@@ -13,6 +13,7 @@ struct SpeciesConfig
     int sensorSize;
     float attractionTreshold;
     float repulsionTreshold;
+    float turnBackTreshold;
 };
 
 struct ShaderConfig {
@@ -41,6 +42,8 @@ layout(std430, binding = 1) buffer OutputBuffer {
 };
 
 layout(rgba32f, binding = 3) uniform image2D uStateImage;
+
+const float M_PI        = 3.14159265358979323846;
 
 void torus(inout vec2 pos)
 {
@@ -184,6 +187,9 @@ void update_one(uint idx)
 
         angleDelta -= repForce;
     }
+
+    if (forward_opp > forward && random01 < spec.turnBackTreshold)
+        angleDelta = M_PI;
     
     agent.angle += angleDelta;   
     agent.position += vec2(spec.velocity*cos(agent.angle),spec.velocity*sin(agent.angle));

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace KernelAutomata.Models
 {
-    [StructLayout(LayoutKind.Explicit, Size = 100)]
+    [StructLayout(LayoutKind.Explicit, Size = 112)]
     public struct ShaderConfig
     {
         public ShaderConfig()
@@ -32,14 +32,14 @@ namespace KernelAutomata.Models
         [FieldOffset(16)]
         public SpeciesConfig species_r;
 
-        [FieldOffset(44)]
+        [FieldOffset(48)]
         public SpeciesConfig species_g;
 
-        [FieldOffset(72)]
+        [FieldOffset(80)]
         public SpeciesConfig species_b;
     }
 
-    [StructLayout(LayoutKind.Explicit, Size = 28)]
+    [StructLayout(LayoutKind.Explicit, Size = 32)]
     public struct SpeciesConfig
     {
         public SpeciesConfig()
@@ -51,6 +51,7 @@ namespace KernelAutomata.Models
             sensorSize = 1;
             attractionTreshold = 0.2f;
             repulsionTreshold = 0.1f;
+            turnBackTreshold = 0.0f;
         }
 
         [FieldOffset(0)]
@@ -73,5 +74,8 @@ namespace KernelAutomata.Models
 
         [FieldOffset(24)]
         public float repulsionTreshold;
+
+        [FieldOffset(28)]
+        public float turnBackTreshold;
     }
 }
