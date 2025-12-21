@@ -56,11 +56,11 @@ namespace ShaderAutomata.Gui
 
         private int vbo;
 
-        private readonly int ubo;
+        private int configBuffer;
 
-        private readonly int agentsBuffer;
+        private int agentsBuffer;
 
-        private readonly int maxGroupsX;
+        private int maxGroupsX;
 
         private int computeProgram;
 
@@ -84,6 +84,42 @@ namespace ShaderAutomata.Gui
 
         private DraggingHandler dragging;
 
+        private void DestroyGlControl()
+        {
+            if (glControl == null || glControl.IsDisposed)
+                return;
+
+            glControl.MakeCurrent();
+
+            // Programs
+            if (updateProgram != 0) GL.DeleteProgram(updateProgram);
+            if (displayProgram != 0) GL.DeleteProgram(displayProgram);
+            if (computeProgram != 0) GL.DeleteProgram(computeProgram);
+
+            // Buffers
+            if (vbo != 0) GL.DeleteBuffer(vbo);
+            if (vao != 0) GL.DeleteVertexArray(vao);
+            if (agentsBuffer != 0) GL.DeleteBuffer(agentsBuffer);
+            if (configBuffer != 0) GL.DeleteBuffer(configBuffer);
+
+            // Textures
+            if (stateTexA != 0) GL.DeleteTexture(stateTexA);
+            if (stateTexB != 0) GL.DeleteTexture(stateTexB);
+
+            // Framebuffers
+            if (fboA != 0) GL.DeleteFramebuffer(fboA);
+            if (fboB != 0) GL.DeleteFramebuffer(fboB);
+
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            GL.BindTexture(TextureTarget.Texture2D, 0);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+            GL.BindVertexArray(0);
+
+            GL.Finish();
+            glControl.Dispose();
+            host.Child = null;
+        }
+
         public OpenGlRenderer(Panel placeholder, Simulation simulation)
         {
             this.placeholder = placeholder;
@@ -92,7 +128,19 @@ namespace ShaderAutomata.Gui
             host.Visibility = Visibility.Visible;
             host.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
             host.VerticalAlignment = VerticalAlignment.Stretch;
+            placeholder.Children.Add(host);
+            CreateGlControl();
+        }
 
+        public void Recreate()
+        {
+            DestroyGlControl();
+            //placeholder.Children.Clear();
+            CreateGlControl();
+        }
+
+        private void CreateGlControl()
+        {
             glControl = new GLControl(new GLControlSettings
             {
                 API = OpenTK.Windowing.Common.ContextAPI.OpenGL,
@@ -104,7 +152,6 @@ namespace ShaderAutomata.Gui
 
             glControl.Dock = DockStyle.Fill;
             host.Child = glControl;
-            placeholder.Children.Add(host);
             glControl.Paint += GlControl_Paint;
             glControl.MakeCurrent();
 
@@ -123,13 +170,13 @@ namespace ShaderAutomata.Gui
             Application.Current.MainWindow.Title = versionInfo;
 
             // allocate space for ShaderConfig passed to each compute shader
-            ubo = GL.GenBuffer();
-            GL.BindBuffer(BufferTarget.ShaderStorageBuffer, ubo);
+            configBuffer = GL.GenBuffer();
+            GL.BindBuffer(BufferTarget.ShaderStorageBuffer, configBuffer);
             int configSizeInBytes = Marshal.SizeOf<ShaderConfig>();
             GL.BufferData(BufferTarget.ShaderStorageBuffer, configSizeInBytes, IntPtr.Zero, BufferUsageHint.DynamicDraw);
-            GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 0, ubo);
+            GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 0, configBuffer);
             GL.GetInteger((OpenTK.Graphics.OpenGL.GetIndexedPName)All.MaxComputeWorkGroupCount, 0, out maxGroupsX);
-             
+
             //allocate agents buffer
             GL.GenBuffers(1, out agentsBuffer);
             GL.BindBuffer(BufferTarget.ShaderStorageBuffer, agentsBuffer);
@@ -150,12 +197,18 @@ namespace ShaderAutomata.Gui
             stateTexB = TextureUtil.CreateStateTexture(sim.shaderConfig.width, sim.shaderConfig.height);
 
             //upload initial texture - empty
-            float[] initialState = new float[sim.shaderConfig.width * sim.shaderConfig.height * 4]; 
+            float[] initialState = new float[sim.shaderConfig.width * sim.shaderConfig.height * 4];
             GL.BindTexture(TextureTarget.Texture2D, stateTexA);
+            GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, sim.shaderConfig.width, sim.shaderConfig.height, PixelFormat.Rgba, PixelType.Float, initialState);
+            GL.BindTexture(TextureTarget.Texture2D, stateTexB);
             GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, sim.shaderConfig.width, sim.shaderConfig.height, PixelFormat.Rgba, PixelType.Float, initialState);
 
             fboA = TextureUtil.CreateFboForTexture(stateTexA);
+            GL.ClearColor(0f, 0f, 0f, 0f);
+            GL.Clear(ClearBufferMask.ColorBufferBit);
             fboB = TextureUtil.CreateFboForTexture(stateTexB);
+            GL.ClearColor(0f, 0f, 0f, 0f);
+            GL.Clear(ClearBufferMask.ColorBufferBit);
 
             // Initialize uniforms
             GL.UseProgram(updateProgram);
@@ -182,8 +235,12 @@ namespace ShaderAutomata.Gui
 
             (vao, vbo) = PolygonUtil.CreateQuad();
 
-            dragging = new DraggingHandler(glControl, (pos, left) => true, (prev, curr) => 
-            { 
+            GL.ClearColor(0f, 0f, 0f, 1f);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            glControl.SwapBuffers();
+
+            dragging = new DraggingHandler(glControl, (pos, left) => true, (prev, curr) =>
+            {
                 var delta = prev - curr;
                 center.X += delta.X / (glControl.Width * zoom);
                 center.Y -= delta.Y / (glControl.Height * zoom);
@@ -218,13 +275,13 @@ namespace ShaderAutomata.Gui
 
         public void Draw()
         {
-            if (Application.Current.MainWindow.WindowState == System.Windows.WindowState.Minimized)
+            if (Application.Current?.MainWindow == null || Application.Current?.MainWindow?.WindowState == System.Windows.WindowState.Minimized)
                 return;
 
             //upload config
             sim.shaderConfig.time++;
             int configSizeInBytes = Marshal.SizeOf<ShaderConfig>();
-            GL.BindBuffer(BufferTarget.ShaderStorageBuffer, ubo);
+            GL.BindBuffer(BufferTarget.ShaderStorageBuffer, configBuffer);
             GL.BufferSubData(BufferTarget.ShaderStorageBuffer, IntPtr.Zero, Marshal.SizeOf<ShaderConfig>(), ref sim.shaderConfig);
 
             //run compute

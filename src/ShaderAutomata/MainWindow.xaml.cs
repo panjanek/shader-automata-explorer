@@ -18,6 +18,8 @@ namespace ShaderAutomata
     {
         private OpenGlRenderer renderer;
 
+        private ConfigWindow configWindow;
+
         private bool uiPending;
 
         private DateTime lastCheckTime;
@@ -40,6 +42,9 @@ namespace ShaderAutomata
             DispatcherTimer infoTimer = new DispatcherTimer() { Interval = TimeSpan.FromSeconds(1.0) };
             infoTimer.Tick += InfoTimer_Tick;
             infoTimer.Start();
+
+            configWindow = new ConfigWindow(sim, renderer);
+            configWindow.Show();
         }
 
         private void SystemTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)

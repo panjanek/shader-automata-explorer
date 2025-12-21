@@ -1,0 +1,101 @@
+﻿<Window x:Class="ShaderAutomata.ConfigWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ShaderAutomata"
+        mc:Ignorable="d"
+        Title="ConfigWindow" 
+        Height="450" 
+        Width="800"
+        ResizeMode="CanMinimize"
+        WindowStartupLocation="CenterOwner"
+        WindowState="Minimized"
+        ShowInTaskbar="True"
+        Topmost="True"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Opacity="0.85">
+    <Border Background="#CC2B2B2B"
+            CornerRadius="6"
+            BorderBrush="#444"
+            BorderThickness="1">
+
+        <DockPanel>
+
+            <!-- Custom Title Bar -->
+            <Grid Height="32"
+                  DockPanel.Dock="Top"
+                  Background="#FF1E1E1E"
+                  MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="40"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Title -->
+                <TextBlock Text="Configuration"
+                           VerticalAlignment="Center"
+                           Margin="10,0,0,0"
+                           Foreground="White"
+                           FontWeight="SemiBold"/>
+
+                <!-- Minimize Button -->
+                <Button Grid.Column="1"
+                        Content="─"
+                        FontSize="14"
+                        Foreground="White"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Click="Minimize_Click"
+                        Cursor="Hand"/>
+
+            </Grid>
+
+            <!-- Window Content -->
+            <Grid Margin="10">
+
+                <Grid Margin="12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <CheckBox Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" Background="DarkRed" Tag="r" Checked="CheckBox_Changed" Unchecked="CheckBox_Changed" Click="ResetButton_Click"/>
+                    <CheckBox Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" Background="DarkGreen" Tag="g"  Checked="CheckBox_Changed" Unchecked="CheckBox_Changed" Click="ResetButton_Click"/>
+                    <CheckBox Grid.Row="0" Grid.Column="3" HorizontalAlignment="Center" Background="DarkBlue" Tag="b"  Checked="CheckBox_Changed" Unchecked="CheckBox_Changed" Click="ResetButton_Click"/>
+                    
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Velocity" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <Slider Grid.Row="1" Grid.Column="1" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_r.velocity"/>
+                    <Slider Grid.Row="1" Grid.Column="2" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_g.velocity"/>
+                    <Slider Grid.Row="1" Grid.Column="3" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_b.velocity"/>
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Turn speed" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <Slider Grid.Row="2" Grid.Column="1" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_r.turnSpeed"/>
+                    <Slider Grid.Row="2" Grid.Column="2" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_g.turnSpeed"/>
+                    <Slider Grid.Row="2" Grid.Column="3" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_b.turnSpeed"/>
+
+                    <Button Grid.Row="10" Grid.Column="0" Click="ResetButton_Click">Reset</Button>
+                </Grid>
+            </Grid>
+
+        </DockPanel>
+    </Border>
+</Window>
