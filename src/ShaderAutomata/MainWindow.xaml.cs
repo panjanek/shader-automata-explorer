@@ -45,6 +45,7 @@ namespace ShaderAutomata
 
             configWindow = new ConfigWindow(sim, renderer);
             configWindow.Show();
+            configWindow.Activate();
         }
 
         private void SystemTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)

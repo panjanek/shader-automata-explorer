@@ -79,6 +79,7 @@ namespace ShaderAutomata
                 if (checkbox.Tag is string)
                 {
                     checkbox.IsChecked = ReflectionUtil.GetObjectValue<bool>(simulation, checkbox.Tag as string);
+                    SetDisabledControls(checkbox.IsChecked ?? false, checkbox.Tag as string);
                 }
             }
 
@@ -163,20 +164,24 @@ namespace ShaderAutomata
                     var checkboxTag = (string)checkbox.Tag;
                     bool isCheched = checkbox.IsChecked ?? false;
                     ReflectionUtil.SetObjectValue<bool>(simulation, checkboxTag, isCheched);
-                    foreach (var control in WpfUtil.FindVisualChildren<Control>(this))
-                    {
-                        if (control.Tag is string)
-                        {
-                            var controlTag = control.Tag as string;
-                            if (controlTag.StartsWith($"shaderConfig.species_{checkboxTag}") || controlTag.StartsWith($"start{checkboxTag.ToUpper()}"))
-                            {
-                                control.IsEnabled = isCheched;
-                                control.Opacity = isCheched ? 1 : 0.3;
-                            }
-                        }
-                    }
-
+                    SetDisabledControls(isCheched, checkboxTag);
                     Reset();
+                }
+            }
+        }
+
+        private void SetDisabledControls(bool enabled, string color)
+        {
+            foreach (var control in WpfUtil.FindVisualChildren<Control>(this))
+            {
+                if (control.Tag is string)
+                {
+                    var controlTag = control.Tag as string;
+                    if (controlTag.StartsWith($"shaderConfig.species_{color}") || controlTag.StartsWith($"start{color.ToUpper()}"))
+                    {
+                        control.IsEnabled = enabled;
+                        control.Opacity = enabled ? 1 : 0.3;
+                    }
                 }
             }
         }

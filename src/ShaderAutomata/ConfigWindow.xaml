@@ -10,7 +10,7 @@
         Width="600"
         ResizeMode="CanMinimize"
         WindowStartupLocation="CenterOwner"
-       
+        WindowState="Normal"
         ShowInTaskbar="True"
         WindowStyle="None"
         AllowsTransparency="True"
