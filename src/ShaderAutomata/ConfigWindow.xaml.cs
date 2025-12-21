@@ -104,6 +104,7 @@ namespace ShaderAutomata
             {
                 simulation.CreateAgents();
                 renderer.Recreate();
+                renderer.ResetPanning();
             }
         }
 
@@ -167,6 +168,7 @@ namespace ShaderAutomata
         {
             simulation.CreateAgents();
             renderer.Recreate();
+            renderer.ResetPanning();
         }
     }
 }

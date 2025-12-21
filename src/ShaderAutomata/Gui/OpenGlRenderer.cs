@@ -112,6 +112,12 @@ namespace ShaderAutomata.Gui
             CreateGlControl();
         }
 
+        public void ResetPanning()
+        {
+            zoom = 1.0f;
+            center = new Vector2(0.5f, 0.5f);
+        }
+
         private void CreateGlControl()
         {
             glControl = new GLControl(new GLControlSettings
@@ -216,14 +222,12 @@ namespace ShaderAutomata.Gui
             dragging = new DraggingHandler(glControl, (pos, left) => true, (prev, curr) =>
             {
                 var delta = prev - curr;
-                center.X += delta.X / (glControl.Width * zoom);
-                center.Y -= delta.Y / (glControl.Height * zoom);
-
-                //center.X = Math.Clamp(center.X, 0.5f / zoom, 1.0f - 0.5f / zoom);
-                //center.Y = Math.Clamp(center.Y, 0.5f / zoom, 1.0f - 0.5f / zoom);
+                center.X += delta.X / (sim.shaderConfig.width * zoom);
+                center.Y -= delta.Y / (sim.shaderConfig.height * zoom);
             });
 
             glControl.MouseWheel += GlControl_MouseWheel;
+            glControl.MouseDown += (s, e) => { if (e.Button == MouseButtons.Right) ResetPanning(); };
         }
 
         private void GlControl_MouseWheel(object? sender, MouseEventArgs e)
@@ -231,40 +235,12 @@ namespace ShaderAutomata.Gui
             var pos = new Vector2(e.X, e.Y);
             float zoomRatio = (float)(1.0 + ZoomingSpeed * e.Delta);
             float newZoom = zoom * zoomRatio;
-            Vector2 mouseUV = new Vector2(pos.X / glControl.Width, 1.0f - pos.Y / glControl.Height);
-            Vector2 mouseTex = (mouseUV - new Vector2(0.5f)) / zoom + center;
+            float screenToTexX = (float)sim.shaderConfig.width / glControl.ClientSize.Width;
+            float screenToTexY = (float)sim.shaderConfig.height / glControl.ClientSize.Height;
+            Vector2 mouseUV = new Vector2((pos.X / glControl.ClientSize.Width) / screenToTexX, (1.0f - pos.Y / glControl.ClientSize.Height) / screenToTexY);
+            Vector2 mouseTex = (mouseUV - new Vector2(0.5f, 0.5f)) / zoom + center;
             center = mouseTex - (mouseUV - new Vector2(0.5f)) / newZoom;
             zoom = newZoom;
-
-            /*
-            Vector2 mouseUV = new Vector2(pos.X / glControl.Width, 1.0f - pos.Y / glControl.Height);
-            float oldZoom = zoom;
-            float newZoom = zoom * zoomRatio;
-
-
-            center = mouseUV - (mouseUV - center) * (oldZoom / newZoom);
-            zoom = newZoom;
-            */
-
-
-
-
-
-
-
-            /*
-            if (newZoom > 1.0)
-            {
-                center = mouseUV - (mouseUV - center) * (oldZoom / newZoom);
-                zoom = newZoom;
-            } else
-            {
-                zoom = 1.0f;
-                center = new Vector2(0.5f, 0.5f);
-            }*/
-
-            //center.X = Math.Clamp(center.X, 0.5f / zoom, 1.0f - 0.5f / zoom);
-            // center.Y = Math.Clamp(center.Y, 0.5f / zoom, 1.0f - 0.5f / zoom);
         }
 
         public void Draw()
@@ -306,20 +282,15 @@ namespace ShaderAutomata.Gui
 
         private void GlControl_Paint(object? sender, PaintEventArgs e)
         {
-
+            //clear
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
             GL.Viewport(0, 0, sim.shaderConfig.width, sim.shaderConfig.height);
             GL.ClearColor(0f, 0f, 0f, 1f);
             GL.Clear(ClearBufferMask.ColorBufferBit);
-            //GL.Viewport(0, 0, glControl.Width, glControl.Height);
 
-
-
-
+            //render
             GL.UseProgram(displayProgram);
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-
-
             GL.Uniform1(zoomLocation, zoom);                 
             GL.Uniform2(centerLocation, center.X, center.Y);
             GL.ActiveTexture(TextureUnit.Texture0);
