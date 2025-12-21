@@ -101,8 +101,7 @@ namespace ShaderAutomata.Gui
             if (!glControl.Context.IsCurrent)
                 glControl.MakeCurrent();
 
-            //GL.Viewport(0, 0, glControl.Width, glControl.Height);
-            GL.Viewport(0, 0, sim.shaderConfig.width, sim.shaderConfig.height);
+            GL.Viewport(0, 0, glControl.Width, glControl.Height);
             glControl.Invalidate();
         }
 
@@ -222,8 +221,10 @@ namespace ShaderAutomata.Gui
             dragging = new DraggingHandler(glControl, (pos, left) => true, (prev, curr) =>
             {
                 var delta = prev - curr;
-                center.X += delta.X / (sim.shaderConfig.width * zoom);
-                center.Y -= delta.Y / (sim.shaderConfig.height * zoom);
+                float screenToTexX = (float)sim.shaderConfig.width / glControl.ClientSize.Width;
+                float screenToTexY = (float)sim.shaderConfig.height / glControl.ClientSize.Height;
+                center.X += delta.X / (sim.shaderConfig.width * zoom / screenToTexX);
+                center.Y -= delta.Y / (sim.shaderConfig.height * zoom / screenToTexY);
             });
 
             glControl.MouseWheel += GlControl_MouseWheel;
@@ -235,9 +236,7 @@ namespace ShaderAutomata.Gui
             var pos = new Vector2(e.X, e.Y);
             float zoomRatio = (float)(1.0 + ZoomingSpeed * e.Delta);
             float newZoom = zoom * zoomRatio;
-            float screenToTexX = (float)sim.shaderConfig.width / glControl.ClientSize.Width;
-            float screenToTexY = (float)sim.shaderConfig.height / glControl.ClientSize.Height;
-            Vector2 mouseUV = new Vector2((pos.X / glControl.ClientSize.Width) / screenToTexX, (1.0f - pos.Y / glControl.ClientSize.Height) / screenToTexY);
+            Vector2 mouseUV = new Vector2(pos.X / glControl.ClientSize.Width, 1.0f - pos.Y / glControl.ClientSize.Height);
             Vector2 mouseTex = (mouseUV - new Vector2(0.5f, 0.5f)) / zoom + center;
             center = mouseTex - (mouseUV - new Vector2(0.5f)) / newZoom;
             zoom = newZoom;
@@ -264,6 +263,7 @@ namespace ShaderAutomata.Gui
             GL.MemoryBarrier(MemoryBarrierFlags.ShaderStorageBarrierBit);
 
             //run update
+            GL.Viewport(0, 0, sim.shaderConfig.width, sim.shaderConfig.height); //this is important for the update.frag here
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, fboB);
             GL.UseProgram(updateProgram);
             GL.ActiveTexture(TextureUnit.Texture0);
@@ -271,6 +271,7 @@ namespace ShaderAutomata.Gui
             GL.Uniform2(texelSizeLocation, 1.0f / sim.shaderConfig.width, 1.0f / sim.shaderConfig.height);
             GL.Uniform1(kernelLocation, 25, sim.blurKernel);
             PolygonUtil.RenderTriangles(vao);
+            GL.Viewport(0, 0, glControl.Width, glControl.Height);   //back to normal viewport
 
             // Swap
             (stateTexA, stateTexB) = (stateTexB, stateTexA);
@@ -279,12 +280,11 @@ namespace ShaderAutomata.Gui
             glControl.Invalidate();
         }
 
-
         private void GlControl_Paint(object? sender, PaintEventArgs e)
         {
             //clear
+            GL.Viewport(0, 0, glControl.Width, glControl.Height);
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-            GL.Viewport(0, 0, sim.shaderConfig.width, sim.shaderConfig.height);
             GL.ClearColor(0f, 0f, 0f, 1f);
             GL.Clear(ClearBufferMask.ColorBufferBit);
 

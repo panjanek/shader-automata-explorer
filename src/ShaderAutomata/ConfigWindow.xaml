@@ -10,7 +10,7 @@
         Width="800"
         ResizeMode="CanMinimize"
         WindowStartupLocation="CenterOwner"
-        WindowState="Minimized"
+       
         ShowInTaskbar="True"
         Topmost="True"
         WindowStyle="None"
@@ -56,7 +56,45 @@
             <!-- Window Content -->
             <Grid Margin="10">
 
-                <Grid Margin="12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Number of agents" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                <ComboBox Name="agentsCount" Grid.Row="1" Grid.Column="0" SelectionChanged="agentsCount_SelectionChanged">
+                    <ComboBoxItem>1000</ComboBoxItem>
+                    <ComboBoxItem>10000</ComboBoxItem>
+                    <ComboBoxItem>100000</ComboBoxItem>
+                    <ComboBoxItem IsSelected="True">1000000</ComboBoxItem>
+                    <ComboBoxItem>10000000</ComboBoxItem>
+                    <ComboBoxItem>100000000</ComboBoxItem>
+                </ComboBox>
+
+                <TextBlock Grid.Row="0" Grid.Column="1" Text="Resolution" VerticalAlignment="Center" Margin="0,0,8,0" />
+                <ComboBox Name="resolution" Grid.Row="1" Grid.Column="1" SelectionChanged="resolution_SelectionChanged">
+                    <ComboBoxItem>320x180</ComboBoxItem>
+                    <ComboBoxItem>720x405</ComboBoxItem>
+                    <ComboBoxItem>1280x720</ComboBoxItem>
+                    <ComboBoxItem IsSelected="True">1920x1080</ComboBoxItem>
+                    <ComboBoxItem>2560x1440</ComboBoxItem>
+                    <ComboBoxItem>3840x1600</ComboBoxItem>
+                </ComboBox>
+
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Diffiusuon kernel" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                <ComboBox Name="kernel" Grid.Row="3" Grid.Column="0"/>
+
+                <TextBlock Grid.Row="2" Grid.Column="1" Text="Decay" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                <Slider Grid.Row="3" Grid.Column="1" Minimum="0.9" Maximum="0.99"/>
+
+                <Grid Margin="12"  Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         
@@ -87,7 +125,6 @@
                     <ComboBox Grid.Row="1" Grid.Column="2" Tag="startG" SelectionChanged="ComboBox_SelectionChanged"/>
                     <ComboBox Grid.Row="1" Grid.Column="3" Tag="startB" SelectionChanged="ComboBox_SelectionChanged"/>
 
-
                     <TextBlock Grid.Row="2" Grid.Column="0" Text="Velocity" VerticalAlignment="Center" Margin="0,0,8,0"/>
                     <Slider Grid.Row="2" Grid.Column="1" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_r.velocity"/>
                     <Slider Grid.Row="2" Grid.Column="2" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_g.velocity"/>
@@ -97,6 +134,16 @@
                     <Slider Grid.Row="3" Grid.Column="1" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_r.turnSpeed"/>
                     <Slider Grid.Row="3" Grid.Column="2" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_g.turnSpeed"/>
                     <Slider Grid.Row="3" Grid.Column="3" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_b.turnSpeed"/>
+
+                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Sensors angle" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <Slider Grid.Row="4" Grid.Column="1" Minimum="0" Maximum="3" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_r.sensorAngle"/>
+                    <Slider Grid.Row="4" Grid.Column="2" Minimum="0" Maximum="3" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_g.sensorAngle"/>
+                    <Slider Grid.Row="4" Grid.Column="3" Minimum="0" Maximum="3" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_b.sensorAngle"/>
+
+                    <TextBlock Grid.Row="5" Grid.Column="0" Text="Sensors distance" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <Slider Grid.Row="5" Grid.Column="1" Minimum="1" Maximum="10" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_r.sensorDistance"/>
+                    <Slider Grid.Row="5" Grid.Column="2" Minimum="1" Maximum="10" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_g.sensorDistance"/>
+                    <Slider Grid.Row="5" Grid.Column="3" Minimum="1" Maximum="10" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_b.sensorDistance"/>
 
                     <Button Grid.Row="10" Grid.Column="0" Click="Reset_Click">Reset</Button>
                 </Grid>

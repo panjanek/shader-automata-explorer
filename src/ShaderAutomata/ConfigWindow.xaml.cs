@@ -7,16 +7,19 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using ShaderAutomata.Gui;
 using ShaderAutomata.Models;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using Binding = System.Windows.Data.Binding;
 using CheckBox = System.Windows.Controls.CheckBox;
 using ComboBox = System.Windows.Controls.ComboBox;
+using Control = System.Windows.Controls.Control;
 using ToolTip = System.Windows.Controls.ToolTip;
 using Window = System.Windows.Window;
 
@@ -36,9 +39,10 @@ namespace ShaderAutomata
         {
             InitializeComponent();
             simulation = sim;
-            Closing += (s, e) => { e.Cancel = true; WindowState = WindowState.Minimized; };
-            ContentRendered += (s, e) => UpdateControls();
             this.renderer = renderer;
+            Closing += (s, e) => { e.Cancel = true; WindowState = WindowState.Minimized; };
+            ContentRendered += (s, e) => { UpdateControls(); };
+            Loaded += (s, e) => {  };
         }
 
         public void UpdateControls()
@@ -140,7 +144,22 @@ namespace ShaderAutomata
                 var checkbox = (CheckBox)sender;
                 if (checkbox.Tag is string)
                 {
-                    ReflectionUtil.SetObjectValue<bool>(simulation, (string)checkbox.Tag, checkbox.IsChecked ?? false);
+                    var checkboxTag = (string)checkbox.Tag;
+                    bool isCheched = checkbox.IsChecked ?? false;
+                    ReflectionUtil.SetObjectValue<bool>(simulation, checkboxTag, isCheched);
+                    foreach (var control in WpfUtil.FindVisualChildren<Control>(this))
+                    {
+                        if (control.Tag is string)
+                        {
+                            var controlTag = control.Tag as string;
+                            if (controlTag.StartsWith($"shaderConfig.species_{checkboxTag}") || controlTag.StartsWith($"start{checkboxTag.ToUpper()}"))
+                            {
+                                control.IsEnabled = isCheched;
+                                control.Opacity = isCheched ? 1 : 0.3;
+                            }
+                        }
+                    }
+
                     Reset();
                 }
             }
@@ -162,6 +181,46 @@ namespace ShaderAutomata
                     }
                 }
             }
+        }
+
+        private void agentsCount_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var selectionStr = GetComboSelectionAsString(agentsCount);
+            if (int.TryParse(selectionStr, out var newCount))
+            {
+                simulation.shaderConfig.agentsCount = newCount;
+                simulation.CreateAgents();
+                renderer.Recreate();
+                renderer.ResetPanning();
+            }
+        }
+
+        private void resolution_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var resolutionStr = GetComboSelectionAsString(resolution);
+            if (!string.IsNullOrWhiteSpace(resolutionStr) && resolutionStr.Contains("x"))
+            {
+                var split = resolutionStr.Split('x');
+                if (int.TryParse(split[0], out var newWidth) && int.TryParse(split[1], out var newHeight))
+                {
+                    simulation.shaderConfig.width = newWidth;
+                    simulation.shaderConfig.height = newHeight;
+                    simulation.CreateAgents();
+                    renderer.Recreate();
+                    renderer.ResetPanning();
+                }
+            }
+        }
+
+        private string GetComboSelectionAsString(ComboBox combo)
+        {
+            if (combo.SelectedItem is ComboBoxItem)
+            {
+                var item = (ComboBoxItem)combo.SelectedItem;
+                return item.Content?.ToString();
+            }
+
+            return null;
         }
 
         private void Reset_Click(object sender, RoutedEventArgs e)
