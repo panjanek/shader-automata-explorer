@@ -269,7 +269,7 @@ namespace ShaderAutomata.Gui
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, stateTexA);
             GL.Uniform2(texelSizeLocation, 1.0f / sim.shaderConfig.width, 1.0f / sim.shaderConfig.height);
-            GL.Uniform1(kernelLocation, 25, sim.blurKernel);
+            GL.Uniform1(kernelLocation, 25, sim.kernel);
             PolygonUtil.RenderTriangles(vao);
             GL.Viewport(0, 0, glControl.Width, glControl.Height);   //back to normal viewport
 

@@ -43,6 +43,9 @@ namespace ShaderAutomata
             Closing += (s, e) => { e.Cancel = true; WindowState = WindowState.Minimized; };
             ContentRendered += (s, e) => { UpdateControls(); };
             Loaded += (s, e) => {  };
+            foreach(var kernelName in Simulation.AvailableKernels.Keys)
+                kernel.Items.Add(new ComboBoxItem() { IsSelected = kernelName.Equals("Default"), Content = kernelName });
+            decay.Value = simulation.decay;
         }
 
         public void UpdateControls()
@@ -209,6 +212,26 @@ namespace ShaderAutomata
                     renderer.Recreate();
                     renderer.ResetPanning();
                 }
+            }
+        }
+
+        private void kernel_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var kernelName = GetComboSelectionAsString(kernel);
+            if (!string.IsNullOrWhiteSpace(kernelName) && simulation != null)
+            {
+                simulation.kernelName = kernelName;
+                simulation.ApplyKernel();
+            }
+        }
+
+        private void decay_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (simulation != null)
+            {
+                simulation.decay = (float)e.NewValue;
+                simulation.ApplyKernel();
+                decayLabel.Text = $"Decay {simulation.decay.ToString("0.000")}";
             }
         }
 

@@ -2,7 +2,6 @@
 
 uniform sampler2D uPrevState;
 uniform vec2 uTexelSize;         // (1.0/width, 1.0/height)
-uniform vec2 uScreenSize;
 uniform float uKernel[25];
 
 layout(location = 0) out vec4 outState;

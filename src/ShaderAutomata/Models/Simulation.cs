@@ -11,17 +11,67 @@ namespace ShaderAutomata.Models
 {
     public class Simulation
     {
-        public double Test;
+        public float decay = 0.98f;
+
+        public string kernelName = "Default";
 
         public ShaderConfig shaderConfig;
 
-        public float[] blurKernel = new float[25] {
-            0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-            0.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-            0.1f, 2.0f, 30.0f, 2.0f, 0.0f,
-            0.0f, 1.0f, 2.0f, 1.0f, 0.0f,
-            0.0f, 0.0f, 0.0f, 0.0f, 0.0f
-        };
+        public float[] kernel;
+
+        public static Dictionary<string, float[]> AvailableKernels { get; set; } = new()
+        {
+            ["Default"] = [
+                  0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+                  0.0f, 1.0f, 2.0f, 1.0f, 0.0f,
+                  0.1f, 2.0f, 30.0f, 2.0f, 0.1f,
+                  0.0f, 1.0f, 2.0f, 1.0f, 0.0f,
+                  0.0f, 0.0f, 0.0f, 0.0f, 0.0f
+            ],
+            ["Mild"] = [
+                  0,  0,  1,  0,  0,
+                  0,  2,  4,  2,  0,
+                  1,  4, 20,  4,  1,
+                  0,  2,  4,  2,  0,
+                  0,  0,  1,  0,  0
+                ],
+            ["Moderate"] = [
+                  1,  2,  3,  2,  1,
+                  2,  4,  6,  4,  2,
+                  3,  6, 10,  6,  3,
+                  2,  4,  6,  4,  2,
+                  1,  2,  3,  2,  1
+                ],
+            ["Strong"] = [
+                  1,  2,  4,  2,  1,
+                  2,  4,  8,  4,  2,
+                  4,  8,  4,  8,  4,
+                  2,  4,  8,  4,  2,
+                  1,  2,  4,  2,  1
+                ],
+            ["Edge-biased"] = [
+                  0,  1,  2,  1,  0,
+                  1,  2,  4,  2,  1,
+                  2,  4,  2,  4,  2,
+                  1,  2,  4,  2,  1,
+                  0,  1,  2,  1,  0
+                ],
+            ["Uniform"] = [
+                  1,  1,  1,  1,  1,
+                  1,  1,  1,  1,  1,
+                  1,  1,  1,  1,  1,
+                  1,  1,  1,  1,  1,
+                  1,  1,  1,  1,  1
+                ],
+            ["Anisotropic"] = [
+                  0,  0,  1,  0,  0,
+                  0,  1,  2,  1,  0,
+                  0,  2,  6,  2,  0,
+                  0,  1,  2,  1,  0,
+                  0,  0,  1,  0,  0
+                ]
+        };    
+
 
         private Random rnd = new Random(123);
 
@@ -39,7 +89,7 @@ namespace ShaderAutomata.Models
 
         public Simulation(int width, int height)
         {
-            MathUtil.Normalize(blurKernel, 0.98f);
+            ApplyKernel();
             shaderConfig = new ShaderConfig();
             shaderConfig.agentsCount = 1000000;
             shaderConfig.width = width;
@@ -78,6 +128,11 @@ namespace ShaderAutomata.Models
             }
 
             return agents;
+        }
+
+        public void ApplyKernel()
+        {
+            kernel = MathUtil.Normalize(AvailableKernels[kernelName], decay);
         }
 
         private int SelectRandomly(bool[] active)

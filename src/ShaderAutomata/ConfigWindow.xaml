@@ -89,10 +89,10 @@
                 </ComboBox>
 
                 <TextBlock Grid.Row="2" Grid.Column="0" Text="Diffiusuon kernel" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                <ComboBox Name="kernel" Grid.Row="3" Grid.Column="0"/>
+                <ComboBox Name="kernel" Grid.Row="3" Grid.Column="0" SelectionChanged="kernel_SelectionChanged"/>
 
-                <TextBlock Grid.Row="2" Grid.Column="1" Text="Decay" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                <Slider Grid.Row="3" Grid.Column="1" Minimum="0.9" Maximum="0.99"/>
+                <TextBlock Grid.Row="2" Grid.Column="1" Text="Decay" VerticalAlignment="Center" Margin="0,0,8,0" Name="decayLabel"/>
+                <Slider Grid.Row="3" Grid.Column="1" Name="decay" Minimum="0.75" Maximum="1" SmallChange="0.001" ValueChanged="decay_ValueChanged"/>
 
                 <Grid Margin="12"  Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3">
                     <Grid.ColumnDefinitions>
