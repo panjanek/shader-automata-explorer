@@ -10,6 +10,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using KernelAutomata.Gui;
+using KernelAutomata.Models;
 
 namespace KernelAutomata
 {
@@ -22,6 +23,8 @@ namespace KernelAutomata
         private DateTime lastCheckTime;
 
         private long lastCheckFrameCount;
+
+        private Simulation sim;
         public MainWindow()
         {
             InitializeComponent();
@@ -29,7 +32,8 @@ namespace KernelAutomata
 
         private void parent_Loaded(object sender, RoutedEventArgs e)
         {
-            renderer = new OpenGlRenderer(placeholder);
+            sim = new Simulation(1920, 1080);
+            renderer = new OpenGlRenderer(placeholder, sim);
             System.Timers.Timer systemTimer = new System.Timers.Timer() { Interval = 10 };
             systemTimer.Elapsed += SystemTimer_Elapsed;
             systemTimer.Start();

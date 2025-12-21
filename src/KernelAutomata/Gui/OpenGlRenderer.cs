@@ -4,6 +4,7 @@ using System.Data.Common;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Runtime.Intrinsics.Arm;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,6 +25,7 @@ namespace KernelAutomata.Gui
 {
     public class OpenGlRenderer
     {
+        public const double ZoomingSpeed = 0.0005;
         public int FrameCounter => frameCounter;
 
         private int frameCounter;
@@ -34,9 +36,9 @@ namespace KernelAutomata.Gui
 
         private GLControl glControl;
 
-        public int width;
+        //public int width;
 
-        public int height;
+        //public int height;
 
         private int displayProgram;
 
@@ -70,18 +72,22 @@ namespace KernelAutomata.Gui
 
         private int kernelLocation;
 
+        private int zoomLocation;
+
+        private int centerLocation;
+
+        private float zoom = 5.0f;
+
+        private Vector2 center = new Vector2(0.5f, 0.5f);
+
         private Simulation sim;
 
+        private DraggingHandler dragging;
 
-        private Random rnd = new Random(123);
-
-        public OpenGlRenderer(Panel placeholder)
+        public OpenGlRenderer(Panel placeholder, Simulation simulation)
         {
             this.placeholder = placeholder;
-            width = (int)placeholder.ActualWidth / 1;
-            height = (int)placeholder.ActualHeight / 1;
-            sim = new Simulation(width, height);
-            
+            sim = simulation;
             host = new System.Windows.Forms.Integration.WindowsFormsHost();
             host.Visibility = Visibility.Visible;
             host.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
@@ -116,7 +122,6 @@ namespace KernelAutomata.Gui
             string versionInfo = $"ShaderExplorer. GPU info: openglVer:{openglVer}, rendererVer:{rendererVer}, glslVer:{glslVer}";
             Application.Current.MainWindow.Title = versionInfo;
 
-
             // allocate space for ShaderConfig passed to each compute shader
             ubo = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ShaderStorageBuffer, ubo);
@@ -141,13 +146,13 @@ namespace KernelAutomata.Gui
             updateProgram = ShaderUtil.CreateRenderProgram("fullscreen.vert", "update.frag");
             displayProgram = ShaderUtil.CreateRenderProgram("fullscreen.vert", "display.frag");
 
-            stateTexA = TextureUtil.CreateStateTexture(width, height);
-            stateTexB = TextureUtil.CreateStateTexture(width, height);
+            stateTexA = TextureUtil.CreateStateTexture(sim.shaderConfig.width, sim.shaderConfig.height);
+            stateTexB = TextureUtil.CreateStateTexture(sim.shaderConfig.width, sim.shaderConfig.height);
 
             //upload initial texture - empty
-            float[] initialState = new float[width * height * 4]; 
+            float[] initialState = new float[sim.shaderConfig.width * sim.shaderConfig.height * 4]; 
             GL.BindTexture(TextureTarget.Texture2D, stateTexA);
-            GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, width, height, PixelFormat.Rgba, PixelType.Float, initialState);
+            GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, sim.shaderConfig.width, sim.shaderConfig.height, PixelFormat.Rgba, PixelType.Float, initialState);
 
             fboA = TextureUtil.CreateFboForTexture(stateTexA);
             fboB = TextureUtil.CreateFboForTexture(stateTexB);
@@ -160,6 +165,8 @@ namespace KernelAutomata.Gui
             GL.Uniform1(prevStateLocation, 0);
             GL.UseProgram(displayProgram);
             stateLocation = GL.GetUniformLocation(displayProgram, "uState");
+            zoomLocation = GL.GetUniformLocation(displayProgram, "uZoom");
+            centerLocation = GL.GetUniformLocation(displayProgram, "uZoomCenter");
             GL.Uniform1(stateLocation, 0);
 
             if (prevStateLocation == -1)
@@ -168,8 +175,45 @@ namespace KernelAutomata.Gui
                 throw new Exception("Uniform uTexelSize not found.");
             if (stateLocation == -1)
                 throw new Exception("Uniform uState not found.");
+            if (zoomLocation == -1)
+                throw new Exception("uZoom");
+            if (centerLocation == -1)
+                throw new Exception("uZoomCenter");
 
             (vao, vbo) = PolygonUtil.CreateQuad();
+
+            dragging = new DraggingHandler(glControl, (pos, left) => true, (prev, curr) => 
+            { 
+                var delta = prev - curr;
+                center.X += delta.X / (glControl.Width * zoom);
+                center.Y -= delta.Y / (glControl.Height * zoom);
+
+                center.X = Math.Clamp(center.X, 0.5f / zoom, 1.0f - 0.5f / zoom);
+                center.Y = Math.Clamp(center.Y, 0.5f / zoom, 1.0f - 0.5f / zoom);
+            });
+
+            glControl.MouseWheel += GlControl_MouseWheel;
+        }
+
+        private void GlControl_MouseWheel(object? sender, MouseEventArgs e)
+        {
+            var pos = new Vector2(e.X, e.Y);
+            float zoomRatio = (float)(1.0 + ZoomingSpeed * e.Delta);
+            Vector2 mouseUV = new Vector2(pos.X / glControl.Width, 1.0f - pos.Y / glControl.Height);
+            float oldZoom = zoom;
+            float newZoom = zoom * zoomRatio;
+            if (newZoom > 1.0)
+            {
+                center = mouseUV - (mouseUV - center) * (oldZoom / newZoom);
+                zoom = newZoom;
+            } else
+            {
+                zoom = 1.0f;
+                center = new Vector2(0.5f, 0.5f);
+            }
+
+            center.X = Math.Clamp(center.X, 0.5f / zoom, 1.0f - 0.5f / zoom);
+            center.Y = Math.Clamp(center.Y, 0.5f / zoom, 1.0f - 0.5f / zoom);
         }
 
         public void Draw()
@@ -194,17 +238,18 @@ namespace KernelAutomata.Gui
 
             //run update
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, fboB);
-            GL.Viewport(0, 0, width, height);
             GL.UseProgram(updateProgram);
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, stateTexA);
-            GL.Uniform2(texelSizeLocation, 1.0f / width, 1.0f / height);
+            GL.Uniform2(texelSizeLocation, 1.0f / sim.shaderConfig.width, 1.0f / sim.shaderConfig.height);
             GL.Uniform1(kernelLocation, 25, sim.blurKernel);
             PolygonUtil.RenderTriangles(vao);
 
             // Swap
             (stateTexA, stateTexB) = (stateTexB, stateTexA);
             (fboA, fboB) = (fboB, fboA);
+
+            GL.Viewport(0, 0, glControl.Width, glControl.Height);
             glControl.Invalidate();
         }
 
@@ -212,8 +257,10 @@ namespace KernelAutomata.Gui
         private void GlControl_Paint(object? sender, PaintEventArgs e)
         {
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-            GL.Viewport(0, 0, glControl.Width, glControl.Height);
+            
             GL.UseProgram(displayProgram);
+            GL.Uniform1(zoomLocation, zoom);                 
+            GL.Uniform2(centerLocation, center.X, center.Y);
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, stateTexA);
             PolygonUtil.RenderTriangles(vao);

@@ -37,7 +37,7 @@ namespace KernelAutomata.Models
             shaderConfig.species_g.turnSpeed *= 1.5f;
             shaderConfig.species_g.turnBackTreshold = 1.0f;
 
-            shaderConfig.species_b.strayForce = 3.0f;
+            //shaderConfig.species_b.strayForce = 3.0f;
 
             speciecCount = 3;
         }
