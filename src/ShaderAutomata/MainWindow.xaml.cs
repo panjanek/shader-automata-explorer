@@ -9,6 +9,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using ShaderAutomata.Gui;
 using ShaderAutomata.Models;
 
@@ -46,6 +47,25 @@ namespace ShaderAutomata
             configWindow = new ConfigWindow(sim, renderer);
             configWindow.Show();
             configWindow.Activate();
+
+            KeyDown += MainWindow_KeyDown;
+        }
+
+        private void MainWindow_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            switch (e.Key)
+            {
+                case Key.S:
+                    var dialog = new CommonSaveFileDialog { Title = "Select filename to save capture PNG", DefaultExtension = "png" };
+                    dialog.Filters.Add(new CommonFileDialogFilter("PNG files", "*.png"));
+                    if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
+                    {
+                        renderer.SaveToFile(dialog.FileName);
+                        PopupMessage.Show(this, $"Capture saved to {dialog.FileName}");
+                    }
+                    e.Handled = true;
+                    break;
+            }
         }
 
         private void SystemTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)

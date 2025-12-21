@@ -11,14 +11,15 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Media3D;
 using System.Windows.Media.TextFormatting;
-using ShaderAutomata.Models;
 using OpenTK;
 using OpenTK.Compute.OpenCL;
 using OpenTK.GLControl;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
+using ShaderAutomata.Models;
 using Application = System.Windows.Application;
+using ImageFormat = System.Drawing.Imaging.ImageFormat;
 using Panel = System.Windows.Controls.Panel;
 
 namespace ShaderAutomata.Gui
@@ -298,6 +299,61 @@ namespace ShaderAutomata.Gui
             PolygonUtil.RenderTriangles(vao);
             glControl.SwapBuffers();
             frameCounter++;
+        }
+
+        public void SaveToFile(string fileName)
+        {
+            glControl.MakeCurrent();
+            int width = sim.shaderConfig.width;
+            int height = sim.shaderConfig.height;
+            float[] pixels = new float[width * height * 4];
+            GL.BindTexture(TextureTarget.Texture2D, stateTexA);
+            GL.GetTexImage(
+                TextureTarget.Texture2D,
+                0,
+                PixelFormat.Rgba,
+                PixelType.Float,
+                pixels
+            );
+
+            // Create bitmap
+            using Bitmap bitmap = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            System.Drawing.Imaging.BitmapData data = bitmap.LockBits(
+                new Rectangle(0, 0, width, height),
+                System.Drawing.Imaging.ImageLockMode.WriteOnly,
+                System.Drawing.Imaging.PixelFormat.Format32bppArgb
+            );
+
+            unsafe
+            {
+                byte* dst = (byte*)data.Scan0;
+
+                for (int y = 0; y < height; y++)
+                {
+                    int srcY = height - 1 - y; // vertical flip
+
+                    for (int x = 0; x < width; x++)
+                    {
+                        int srcIndex = (srcY * width + x) * 4;
+                        int dstIndex = y * data.Stride + x * 4;
+
+                        float r = pixels[srcIndex + 0];
+                        float g = pixels[srcIndex + 1];
+                        float b = pixels[srcIndex + 2];
+                        float a = pixels[srcIndex + 3];
+
+                        a = 1.0f;
+
+                        dst[dstIndex + 2] = (byte)(Math.Clamp(r, 0f, 1f) * 255f);
+                        dst[dstIndex + 1] = (byte)(Math.Clamp(g, 0f, 1f) * 255f);
+                        dst[dstIndex + 0] = (byte)(Math.Clamp(b, 0f, 1f) * 255f);
+                        dst[dstIndex + 3] = (byte)(Math.Clamp(a, 0f, 1f) * 255f);
+                    }
+                }
+            }
+
+            bitmap.UnlockBits(data);
+            bitmap.Save(fileName, ImageFormat.Png);
         }
 
         private void DestroyGlControl()
