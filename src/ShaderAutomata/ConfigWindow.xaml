@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:ShaderAutomata"
         mc:Ignorable="d"
         Title="ConfigWindow" 
-        Height="450" 
+        Height="400" 
         Width="600"
         ResizeMode="CanMinimize"
         WindowStartupLocation="CenterOwner"
@@ -167,6 +167,11 @@
                     <Slider Grid.Row="9" Grid.Column="1" Minimum="0" Maximum="1" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_r.turnBackTreshold"/>
                     <Slider Grid.Row="9" Grid.Column="2" Minimum="0" Maximum="1" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_g.turnBackTreshold"/>
                     <Slider Grid.Row="9" Grid.Column="3" Minimum="0" Maximum="1" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_b.turnBackTreshold"/>
+
+                    <TextBlock Grid.Row="10" Grid.Column="0" Text="Stray force" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <Slider Grid.Row="10" Grid.Column="1" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_r.strayForce"/>
+                    <Slider Grid.Row="10" Grid.Column="2" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_g.strayForce"/>
+                    <Slider Grid.Row="10" Grid.Column="3" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_b.strayForce"/>
 
                     <Button Grid.Row="12" Grid.Column="0" Click="Restart_Click" HorizontalAlignment="Stretch">Restart</Button>
                     <Button Grid.Row="12" Grid.Column="3" Click="Default_Click" HorizontalAlignment ="Stretch">Restore Default</Button>
