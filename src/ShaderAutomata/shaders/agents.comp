@@ -199,7 +199,7 @@ void update_one(uint idx)
     random01 = scaleToRange01(random);
     random1 = random01 * 0.3 + 0.85;
 
-    //check if shiuld turn around
+    //check if shuld turn around
     if (forward_opp > forward && random01 < spec.turnBackTreshold)
         angleDelta = M_PI;
     

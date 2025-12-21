@@ -7,12 +7,11 @@
         mc:Ignorable="d"
         Title="ConfigWindow" 
         Height="450" 
-        Width="800"
+        Width="600"
         ResizeMode="CanMinimize"
         WindowStartupLocation="CenterOwner"
        
         ShowInTaskbar="True"
-        Topmost="True"
         WindowStyle="None"
         AllowsTransparency="True"
         Opacity="0.85">
@@ -85,7 +84,7 @@
                     <ComboBoxItem>1280x720</ComboBoxItem>
                     <ComboBoxItem IsSelected="True">1920x1080</ComboBoxItem>
                     <ComboBoxItem>2560x1440</ComboBoxItem>
-                    <ComboBoxItem>3840x1600</ComboBoxItem>
+                    <ComboBoxItem>3840x2160</ComboBoxItem>
                 </ComboBox>
 
                 <TextBlock Grid.Row="2" Grid.Column="0" Text="Diffiusuon kernel" VerticalAlignment="Center" Margin="0,0,8,0"/>
@@ -113,12 +112,16 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/> <!-- 9 -->
+
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="20"/>
+                        <RowDefinition Height="30"/>
                     </Grid.RowDefinitions>
 
-                    <CheckBox Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" Background="DarkRed" Tag="r" Checked="Value_Changed" Unchecked="Value_Changed"/>
-                    <CheckBox Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" Background="DarkGreen" Tag="g"  Checked="Value_Changed" Unchecked="Value_Changed"/>
-                    <CheckBox Grid.Row="0" Grid.Column="3" HorizontalAlignment="Center" Background="DarkBlue" Tag="b"  Checked="Value_Changed" Unchecked="Value_Changed"/>
+                    <CheckBox Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" Background="Red" Tag="r" Checked="Value_Changed" Unchecked="Value_Changed"/>
+                    <CheckBox Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" Background="Green" Tag="g"  Checked="Value_Changed" Unchecked="Value_Changed"/>
+                    <CheckBox Grid.Row="0" Grid.Column="3" HorizontalAlignment="Center" Background="Blue" Tag="b"  Checked="Value_Changed" Unchecked="Value_Changed"/>
 
                     <TextBlock Grid.Row="1" Grid.Column="0" Text="Starting with" VerticalAlignment="Center" Margin="0,0,8,0"/>
                     <ComboBox Grid.Row="1" Grid.Column="1" Tag="startR" SelectionChanged="ComboBox_SelectionChanged"/>
@@ -145,7 +148,28 @@
                     <Slider Grid.Row="5" Grid.Column="2" Minimum="1" Maximum="10" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_g.sensorDistance"/>
                     <Slider Grid.Row="5" Grid.Column="3" Minimum="1" Maximum="10" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_b.sensorDistance"/>
 
-                    <Button Grid.Row="10" Grid.Column="0" Click="Reset_Click">Reset</Button>
+                    <TextBlock Grid.Row="6" Grid.Column="0" Text="Sensor size" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <ComboBox Grid.Row="6" Grid.Column="1" Tag="shaderConfig.species_r.sensorSize" SelectionChanged="ComboBox_SelectionChanged"/>
+                    <ComboBox Grid.Row="6" Grid.Column="2" Tag="shaderConfig.species_g.sensorSize" SelectionChanged="ComboBox_SelectionChanged"/>
+                    <ComboBox Grid.Row="6" Grid.Column="3" Tag="shaderConfig.species_b.sensorSize" SelectionChanged="ComboBox_SelectionChanged"/>
+
+                    <TextBlock Grid.Row="7" Grid.Column="0" Text="Attraction treshold" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <Slider Grid.Row="7" Grid.Column="1" Minimum="0" Maximum="1" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_r.attractionTreshold"/>
+                    <Slider Grid.Row="7" Grid.Column="2" Minimum="0" Maximum="1" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_g.attractionTreshold"/>
+                    <Slider Grid.Row="7" Grid.Column="3" Minimum="0" Maximum="1" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_b.attractionTreshold"/>
+
+                    <TextBlock Grid.Row="8" Grid.Column="0" Text="Repulsion treshold" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <Slider Grid.Row="8" Grid.Column="1" Minimum="0" Maximum="1" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_r.repulsionTreshold"/>
+                    <Slider Grid.Row="8" Grid.Column="2" Minimum="0" Maximum="1" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_g.repulsionTreshold"/>
+                    <Slider Grid.Row="8" Grid.Column="3" Minimum="0" Maximum="1" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_b.repulsionTreshold"/>
+
+                    <TextBlock Grid.Row="9" Grid.Column="0" Text="Turn back treshold" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <Slider Grid.Row="9" Grid.Column="1" Minimum="0" Maximum="1" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_r.turnBackTreshold"/>
+                    <Slider Grid.Row="9" Grid.Column="2" Minimum="0" Maximum="1" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_g.turnBackTreshold"/>
+                    <Slider Grid.Row="9" Grid.Column="3" Minimum="0" Maximum="1" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_b.turnBackTreshold"/>
+
+                    <Button Grid.Row="12" Grid.Column="0" Click="Restart_Click" HorizontalAlignment="Stretch">Restart</Button>
+                    <Button Grid.Row="12" Grid.Column="3" Click="Default_Click" HorizontalAlignment ="Stretch">Restore Default</Button>
                 </Grid>
             </Grid>
 

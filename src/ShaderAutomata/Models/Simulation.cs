@@ -87,22 +87,32 @@ namespace ShaderAutomata.Models
 
         public StartingPosition startB = StartingPosition.Random;
 
-        public Simulation(int width, int height)
+        public Simulation()
         {
+            RestoreDefaults();
+        }
+
+        public void RestoreDefaults()
+        {
+            kernelName = "Default";
+            decay = 0.98f;
             ApplyKernel();
             shaderConfig = new ShaderConfig();
             shaderConfig.agentsCount = 1000000;
-            shaderConfig.width = width;
-            shaderConfig.height = height;
+            shaderConfig.width = 1920;
+            shaderConfig.height = 1080;
 
             shaderConfig.species_g.velocity *= 1.3f;
             shaderConfig.species_g.turnSpeed *= 1.5f;
             shaderConfig.species_g.turnBackTreshold = 1.0f;
 
-            //shaderConfig.species_b.strayForce = 3.0f;
-
             r = true;
+            g = false;
+            b = false;
             startR = StartingPosition.DiskInward;
+            startG = StartingPosition.DiskOutward;
+            startB = StartingPosition.Random;
+            CreateAgents();
         }
 
         public Agent[] CreateAgents()

@@ -34,7 +34,7 @@ namespace ShaderAutomata
 
         private void parent_Loaded(object sender, RoutedEventArgs e)
         {
-            sim = new Simulation(1920, 1080);
+            sim = new Simulation();
             renderer = new OpenGlRenderer(placeholder, sim);
             System.Timers.Timer systemTimer = new System.Timers.Timer() { Interval = 10 };
             systemTimer.Elapsed += SystemTimer_Elapsed;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -96,8 +97,20 @@ namespace ShaderAutomata
                             }
                         }
 
-                        var x = ReflectionUtil.GetObjectValue<StartingPosition>(simulation, combo.Tag as string);
-                        combo.SelectedItem = x;
+                        combo.SelectedItem = ReflectionUtil.GetObjectValue<StartingPosition>(simulation, tag);
+                    }
+                    else if (tag.EndsWith("sensorSize"))
+                    {
+                        if (combo.Items.Count == 0)
+                        {
+                            for(int i=0; i<10; i++)
+                            {
+                                combo.Items.Add(i);
+                            }
+                        }
+
+     
+                        combo.SelectedItem = ReflectionUtil.GetObjectValue<int>(simulation, tag);
                     }
                 }
             }
@@ -182,6 +195,10 @@ namespace ShaderAutomata
                         ReflectionUtil.SetObjectValue<StartingPosition>(simulation, tag, (StartingPosition)combo.SelectedItem);
                         Reset();
                     }
+                    else if (tag.EndsWith("sensorSize"))
+                    {
+                        ReflectionUtil.SetObjectValue<int>(simulation, tag, (int)combo.SelectedItem);
+                    }
                 }
             }
         }
@@ -246,11 +263,35 @@ namespace ShaderAutomata
             return null;
         }
 
-        private void Reset_Click(object sender, RoutedEventArgs e)
+        private void SetComboStringSelection(ComboBox combo, string value)
+        {
+            foreach(var item in combo.Items)
+            {
+                if (item is ComboBoxItem)
+                {
+                    var comboItem = item as ComboBoxItem;
+                    comboItem.IsSelected = comboItem.Content?.ToString() == value;
+                }
+            }
+        }
+
+        private void Restart_Click(object sender, RoutedEventArgs e)
         {
             simulation.CreateAgents();
             renderer.Recreate();
             renderer.ResetPanning();
+        }
+
+        private void Default_Click(object sender, RoutedEventArgs e)
+        {
+            simulation.RestoreDefaults();
+            renderer.Recreate();
+            renderer.ResetPanning();
+            UpdateControls();
+            decay.Value = simulation.decay;
+            SetComboStringSelection(kernel, simulation.kernelName);
+            SetComboStringSelection(resolution, "1920x1080");
+            SetComboStringSelection(agentsCount, simulation.shaderConfig.agentsCount.ToString());
         }
     }
 }
