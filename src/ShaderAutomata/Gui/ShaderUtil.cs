@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenTK.Graphics.OpenGL;
 
-namespace KernelAutomata.Gui
+namespace ShaderAutomata.Gui
 {
     public static class ShaderUtil
     {
@@ -82,7 +82,7 @@ namespace KernelAutomata.Gui
         {
             var assembly = Assembly.GetExecutingAssembly();
             var a = assembly.GetManifestResourceNames();
-            var resourceName = $"KernelAutomata.shaders.{name}";
+            var resourceName = $"ShaderAutomata.shaders.{name}";
             using Stream stream = assembly.GetManifestResourceStream(resourceName) ?? throw new InvalidOperationException($"Resource not found: {resourceName}");
             using StreamReader reader = new StreamReader(stream);
             return reader.ReadToEnd();

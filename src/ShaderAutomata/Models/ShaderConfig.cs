@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KernelAutomata.Models
+namespace ShaderAutomata.Models
 {
     [StructLayout(LayoutKind.Explicit, Size = 120)]
     public struct ShaderConfig

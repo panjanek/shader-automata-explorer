@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenTK.Mathematics;
 
-namespace KernelAutomata.Models
+namespace ShaderAutomata.Models
 {
     [StructLayout(LayoutKind.Explicit, Size = 16)]
     public struct Agent

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KernelAutomata.Gui
+namespace ShaderAutomata.Gui
 {
     public static class MathUtil
     {

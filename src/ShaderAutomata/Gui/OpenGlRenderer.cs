@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Media3D;
 using System.Windows.Media.TextFormatting;
-using KernelAutomata.Models;
+using ShaderAutomata.Models;
 using OpenTK;
 using OpenTK.Compute.OpenCL;
 using OpenTK.GLControl;
@@ -21,7 +21,7 @@ using OpenTK.Windowing.Common;
 using Application = System.Windows.Application;
 using Panel = System.Windows.Controls.Panel;
 
-namespace KernelAutomata.Gui
+namespace ShaderAutomata.Gui
 {
     public class OpenGlRenderer
     {
@@ -76,7 +76,7 @@ namespace KernelAutomata.Gui
 
         private int centerLocation;
 
-        private float zoom = 5.0f;
+        private float zoom = 1.0f;
 
         private Vector2 center = new Vector2(0.5f, 0.5f);
 

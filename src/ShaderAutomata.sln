@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36705.20 d17.14
+VisualStudioVersion = 17.14.36705.20
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KernelAutomata", "KernelAutomata\KernelAutomata.csproj", "{6D226124-8E2B-46FB-BB3A-FEF7A4AA2689}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShaderAutomata", "ShaderAutomata\ShaderAutomata.csproj", "{6D226124-8E2B-46FB-BB3A-FEF7A4AA2689}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

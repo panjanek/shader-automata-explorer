@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenTK.Graphics.OpenGL;
 
-namespace KernelAutomata.Gui
+namespace ShaderAutomata.Gui
 {
     public static class PolygonUtil
     {

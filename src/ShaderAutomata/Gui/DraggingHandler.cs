@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using OpenTK.GLControl;
 using OpenTK.Mathematics;
 
-namespace KernelAutomata.Gui
+namespace ShaderAutomata.Gui
 {
     public class DraggingHandler
     {

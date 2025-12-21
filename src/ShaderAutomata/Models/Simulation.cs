@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Media3D;
-using KernelAutomata.Gui;
+using ShaderAutomata.Gui;
 using OpenTK.Mathematics;
 
-namespace KernelAutomata.Models
+namespace ShaderAutomata.Models
 {
     public class Simulation
     {

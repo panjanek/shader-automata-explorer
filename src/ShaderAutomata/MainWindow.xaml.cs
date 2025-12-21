@@ -9,10 +9,10 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
-using KernelAutomata.Gui;
-using KernelAutomata.Models;
+using ShaderAutomata.Gui;
+using ShaderAutomata.Models;
 
-namespace KernelAutomata
+namespace ShaderAutomata
 {
     public partial class MainWindow : Window
     {
