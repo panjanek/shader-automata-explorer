@@ -52,6 +52,7 @@ namespace ShaderAutomata.Models
             //shaderConfig.species_b.strayForce = 3.0f;
 
             r = true;
+            startR = StartingPosition.Random;
         }
 
         public Agent[] CreateAgents()

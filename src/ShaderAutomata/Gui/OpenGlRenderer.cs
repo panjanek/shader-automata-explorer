@@ -36,10 +36,6 @@ namespace ShaderAutomata.Gui
 
         private GLControl glControl;
 
-        //public int width;
-
-        //public int height;
-
         private int displayProgram;
 
         private int updateProgram;
@@ -84,42 +80,6 @@ namespace ShaderAutomata.Gui
 
         private DraggingHandler dragging;
 
-        private void DestroyGlControl()
-        {
-            if (glControl == null || glControl.IsDisposed)
-                return;
-
-            glControl.MakeCurrent();
-
-            // Programs
-            if (updateProgram != 0) GL.DeleteProgram(updateProgram);
-            if (displayProgram != 0) GL.DeleteProgram(displayProgram);
-            if (computeProgram != 0) GL.DeleteProgram(computeProgram);
-
-            // Buffers
-            if (vbo != 0) GL.DeleteBuffer(vbo);
-            if (vao != 0) GL.DeleteVertexArray(vao);
-            if (agentsBuffer != 0) GL.DeleteBuffer(agentsBuffer);
-            if (configBuffer != 0) GL.DeleteBuffer(configBuffer);
-
-            // Textures
-            if (stateTexA != 0) GL.DeleteTexture(stateTexA);
-            if (stateTexB != 0) GL.DeleteTexture(stateTexB);
-
-            // Framebuffers
-            if (fboA != 0) GL.DeleteFramebuffer(fboA);
-            if (fboB != 0) GL.DeleteFramebuffer(fboB);
-
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-            GL.BindTexture(TextureTarget.Texture2D, 0);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-            GL.BindVertexArray(0);
-
-            GL.Finish();
-            glControl.Dispose();
-            host.Child = null;
-        }
-
         public OpenGlRenderer(Panel placeholder, Simulation simulation)
         {
             this.placeholder = placeholder;
@@ -129,7 +89,21 @@ namespace ShaderAutomata.Gui
             host.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
             host.VerticalAlignment = VerticalAlignment.Stretch;
             placeholder.Children.Add(host);
+            placeholder.SizeChanged += Placeholder_SizeChanged;
             CreateGlControl();
+        }
+
+        private void Placeholder_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (glControl.Width <= 0 || glControl.Height <= 0)
+                return;
+
+            if (!glControl.Context.IsCurrent)
+                glControl.MakeCurrent();
+
+            //GL.Viewport(0, 0, glControl.Width, glControl.Height);
+            GL.Viewport(0, 0, sim.shaderConfig.width, sim.shaderConfig.height);
+            glControl.Invalidate();
         }
 
         public void Recreate()
@@ -227,11 +201,12 @@ namespace ShaderAutomata.Gui
                 throw new Exception("Uniform uTexelSize not found.");
             if (stateLocation == -1)
                 throw new Exception("Uniform uState not found.");
+            
             if (zoomLocation == -1)
                 throw new Exception("uZoom");
             if (centerLocation == -1)
                 throw new Exception("uZoomCenter");
-
+            
             (vao, vbo) = PolygonUtil.CreateQuad();
 
             GL.ClearColor(0f, 0f, 0f, 1f);
@@ -244,8 +219,8 @@ namespace ShaderAutomata.Gui
                 center.X += delta.X / (glControl.Width * zoom);
                 center.Y -= delta.Y / (glControl.Height * zoom);
 
-                center.X = Math.Clamp(center.X, 0.5f / zoom, 1.0f - 0.5f / zoom);
-                center.Y = Math.Clamp(center.Y, 0.5f / zoom, 1.0f - 0.5f / zoom);
+                //center.X = Math.Clamp(center.X, 0.5f / zoom, 1.0f - 0.5f / zoom);
+                //center.Y = Math.Clamp(center.Y, 0.5f / zoom, 1.0f - 0.5f / zoom);
             });
 
             glControl.MouseWheel += GlControl_MouseWheel;
@@ -255,9 +230,29 @@ namespace ShaderAutomata.Gui
         {
             var pos = new Vector2(e.X, e.Y);
             float zoomRatio = (float)(1.0 + ZoomingSpeed * e.Delta);
+            float newZoom = zoom * zoomRatio;
+            Vector2 mouseUV = new Vector2(pos.X / glControl.Width, 1.0f - pos.Y / glControl.Height);
+            Vector2 mouseTex = (mouseUV - new Vector2(0.5f)) / zoom + center;
+            center = mouseTex - (mouseUV - new Vector2(0.5f)) / newZoom;
+            zoom = newZoom;
+
+            /*
             Vector2 mouseUV = new Vector2(pos.X / glControl.Width, 1.0f - pos.Y / glControl.Height);
             float oldZoom = zoom;
             float newZoom = zoom * zoomRatio;
+
+
+            center = mouseUV - (mouseUV - center) * (oldZoom / newZoom);
+            zoom = newZoom;
+            */
+
+
+
+
+
+
+
+            /*
             if (newZoom > 1.0)
             {
                 center = mouseUV - (mouseUV - center) * (oldZoom / newZoom);
@@ -266,10 +261,10 @@ namespace ShaderAutomata.Gui
             {
                 zoom = 1.0f;
                 center = new Vector2(0.5f, 0.5f);
-            }
+            }*/
 
-            center.X = Math.Clamp(center.X, 0.5f / zoom, 1.0f - 0.5f / zoom);
-            center.Y = Math.Clamp(center.Y, 0.5f / zoom, 1.0f - 0.5f / zoom);
+            //center.X = Math.Clamp(center.X, 0.5f / zoom, 1.0f - 0.5f / zoom);
+            // center.Y = Math.Clamp(center.Y, 0.5f / zoom, 1.0f - 0.5f / zoom);
         }
 
         public void Draw()
@@ -305,16 +300,26 @@ namespace ShaderAutomata.Gui
             (stateTexA, stateTexB) = (stateTexB, stateTexA);
             (fboA, fboB) = (fboB, fboA);
 
-            GL.Viewport(0, 0, glControl.Width, glControl.Height);
             glControl.Invalidate();
         }
 
 
         private void GlControl_Paint(object? sender, PaintEventArgs e)
         {
+
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-            
+            GL.Viewport(0, 0, sim.shaderConfig.width, sim.shaderConfig.height);
+            GL.ClearColor(0f, 0f, 0f, 1f);
+            GL.Clear(ClearBufferMask.ColorBufferBit);
+            //GL.Viewport(0, 0, glControl.Width, glControl.Height);
+
+
+
+
             GL.UseProgram(displayProgram);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+
+
             GL.Uniform1(zoomLocation, zoom);                 
             GL.Uniform2(centerLocation, center.X, center.Y);
             GL.ActiveTexture(TextureUnit.Texture0);
@@ -322,6 +327,42 @@ namespace ShaderAutomata.Gui
             PolygonUtil.RenderTriangles(vao);
             glControl.SwapBuffers();
             frameCounter++;
+        }
+
+        private void DestroyGlControl()
+        {
+            if (glControl == null || glControl.IsDisposed)
+                return;
+
+            glControl.MakeCurrent();
+
+            // Programs
+            if (updateProgram != 0) GL.DeleteProgram(updateProgram);
+            if (displayProgram != 0) GL.DeleteProgram(displayProgram);
+            if (computeProgram != 0) GL.DeleteProgram(computeProgram);
+
+            // Buffers
+            if (vbo != 0) GL.DeleteBuffer(vbo);
+            if (vao != 0) GL.DeleteVertexArray(vao);
+            if (agentsBuffer != 0) GL.DeleteBuffer(agentsBuffer);
+            if (configBuffer != 0) GL.DeleteBuffer(configBuffer);
+
+            // Textures
+            if (stateTexA != 0) GL.DeleteTexture(stateTexA);
+            if (stateTexB != 0) GL.DeleteTexture(stateTexB);
+
+            // Framebuffers
+            if (fboA != 0) GL.DeleteFramebuffer(fboA);
+            if (fboB != 0) GL.DeleteFramebuffer(fboB);
+
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            GL.BindTexture(TextureTarget.Texture2D, 0);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+            GL.BindVertexArray(0);
+
+            GL.Finish();
+            glControl.Dispose();
+            host.Child = null;
         }
     }
 }
