@@ -78,21 +78,27 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <CheckBox Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" Background="DarkRed" Tag="r" Checked="CheckBox_Changed" Unchecked="CheckBox_Changed" Click="ResetButton_Click"/>
-                    <CheckBox Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" Background="DarkGreen" Tag="g"  Checked="CheckBox_Changed" Unchecked="CheckBox_Changed" Click="ResetButton_Click"/>
-                    <CheckBox Grid.Row="0" Grid.Column="3" HorizontalAlignment="Center" Background="DarkBlue" Tag="b"  Checked="CheckBox_Changed" Unchecked="CheckBox_Changed" Click="ResetButton_Click"/>
-                    
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Velocity" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                    <Slider Grid.Row="1" Grid.Column="1" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_r.velocity"/>
-                    <Slider Grid.Row="1" Grid.Column="2" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_g.velocity"/>
-                    <Slider Grid.Row="1" Grid.Column="3" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_b.velocity"/>
+                    <CheckBox Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" Background="DarkRed" Tag="r" Checked="Value_Changed" Unchecked="Value_Changed"/>
+                    <CheckBox Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" Background="DarkGreen" Tag="g"  Checked="Value_Changed" Unchecked="Value_Changed"/>
+                    <CheckBox Grid.Row="0" Grid.Column="3" HorizontalAlignment="Center" Background="DarkBlue" Tag="b"  Checked="Value_Changed" Unchecked="Value_Changed"/>
 
-                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Turn speed" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                    <Slider Grid.Row="2" Grid.Column="1" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_r.turnSpeed"/>
-                    <Slider Grid.Row="2" Grid.Column="2" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_g.turnSpeed"/>
-                    <Slider Grid.Row="2" Grid.Column="3" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_b.turnSpeed"/>
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Starting with" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <ComboBox Grid.Row="1" Grid.Column="1" Tag="startR" SelectionChanged="ComboBox_SelectionChanged"/>
+                    <ComboBox Grid.Row="1" Grid.Column="2" Tag="startG" SelectionChanged="ComboBox_SelectionChanged"/>
+                    <ComboBox Grid.Row="1" Grid.Column="3" Tag="startB" SelectionChanged="ComboBox_SelectionChanged"/>
 
-                    <Button Grid.Row="10" Grid.Column="0" Click="ResetButton_Click">Reset</Button>
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Velocity" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <Slider Grid.Row="2" Grid.Column="1" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_r.velocity"/>
+                    <Slider Grid.Row="2" Grid.Column="2" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_g.velocity"/>
+                    <Slider Grid.Row="2" Grid.Column="3" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_b.velocity"/>
+
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Turn speed" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <Slider Grid.Row="3" Grid.Column="1" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_r.turnSpeed"/>
+                    <Slider Grid.Row="3" Grid.Column="2" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_g.turnSpeed"/>
+                    <Slider Grid.Row="3" Grid.Column="3" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_b.turnSpeed"/>
+
+                    <Button Grid.Row="10" Grid.Column="0" Click="Reset_Click">Reset</Button>
                 </Grid>
             </Grid>
 

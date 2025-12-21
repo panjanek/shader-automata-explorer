@@ -13,9 +13,12 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using ShaderAutomata.Gui;
 using ShaderAutomata.Models;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using Binding = System.Windows.Data.Binding;
 using CheckBox = System.Windows.Controls.CheckBox;
+using ComboBox = System.Windows.Controls.ComboBox;
 using ToolTip = System.Windows.Controls.ToolTip;
+using Window = System.Windows.Window;
 
 namespace ShaderAutomata
 {
@@ -27,6 +30,8 @@ namespace ShaderAutomata
         private Simulation simulation;
 
         private OpenGlRenderer renderer;
+
+        private bool recreatingEnabled = false;
         public ConfigWindow(Simulation sim, OpenGlRenderer renderer)
         {
             InitializeComponent();
@@ -68,6 +73,38 @@ namespace ShaderAutomata
                     checkbox.IsChecked = ReflectionUtil.GetObjectValue<bool>(simulation, checkbox.Tag as string);
                 }
             }
+
+            foreach (var combo in WpfUtil.FindVisualChildren<ComboBox>(this))
+            {
+                if (combo.Tag is string)
+                {
+                    var tag = combo.Tag as string;
+                    if (tag.StartsWith("start"))
+                    {
+                        if (combo.Items.Count == 0)
+                        {
+                            foreach (StartingPosition value in Enum.GetValues(typeof(StartingPosition)))
+                            {
+                                combo.Items.Add(value);
+                            }
+                        }
+
+                        var x = ReflectionUtil.GetObjectValue<StartingPosition>(simulation, combo.Tag as string);
+                        combo.SelectedItem = x;
+                    }
+                }
+            }
+
+            recreatingEnabled = true;
+        }
+
+        private void Reset()
+        {
+            if (recreatingEnabled)
+            {
+                simulation.CreateAgents();
+                renderer.Recreate();
+            }
         }
 
         private void Minimize_Click(object sender, RoutedEventArgs e)
@@ -95,7 +132,7 @@ namespace ShaderAutomata
             }
         }
 
-        private void CheckBox_Changed(object sender, RoutedEventArgs e)
+        private void Value_Changed(object sender, RoutedEventArgs e)
         {
             if (sender is CheckBox)
             {
@@ -103,13 +140,32 @@ namespace ShaderAutomata
                 if (checkbox.Tag is string)
                 {
                     ReflectionUtil.SetObjectValue<bool>(simulation, (string)checkbox.Tag, checkbox.IsChecked ?? false);
-                    
+                    Reset();
                 }
             }
         }
 
-        private void ResetButton_Click(object sender, RoutedEventArgs e)
+
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (sender is ComboBox)
+            {
+                var combo = (ComboBox)sender;
+                if (combo.Tag is string)
+                {
+                    var tag = combo.Tag as string;
+                    if (tag.StartsWith("start"))
+                    {
+                        ReflectionUtil.SetObjectValue<StartingPosition>(simulation, tag, (StartingPosition)combo.SelectedItem);
+                        Reset();
+                    }
+                }
+            }
+        }
+
+        private void Reset_Click(object sender, RoutedEventArgs e)
+        {
+            simulation.CreateAgents();
             renderer.Recreate();
         }
     }

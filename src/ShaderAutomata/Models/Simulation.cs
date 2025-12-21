@@ -31,6 +31,12 @@ namespace ShaderAutomata.Models
 
         public bool b;
 
+        public StartingPosition startR = StartingPosition.Disk;
+
+        public StartingPosition startG = StartingPosition.Disk;
+
+        public StartingPosition startB = StartingPosition.Random;
+
         public Simulation(int width, int height)
         {
             MathUtil.Normalize(blurKernel, 0.98f);
@@ -55,13 +61,18 @@ namespace ShaderAutomata.Models
             for (int i = 0; i < agents.Length; i++)
             {
                 agents[i].species = SelectRandomly(active);
-                var angle = rnd.NextDouble() * Math.PI * 2;
-                var r = 0.28 * Math.Min(shaderConfig.width, shaderConfig.height) * rnd.NextDouble();
-                agents[i].position = new Vector2((float)(shaderConfig.width / 2 + (agents[i].species * 250) + r * Math.Cos(angle)), (float)(shaderConfig.height / 2 + r * Math.Sin(angle)));
-                agents[i].angle = (float)(Math.PI + angle);
-
-                //agents[i].position = new Vector2((float)(width * rnd.NextDouble()), (float)(height * rnd.NextDouble()));
-                //agents[i].angle = (float)(rnd.NextDouble() * 2 * Math.PI);
+                switch (agents[i].species)
+                {
+                    case 0:
+                        SetStartingPosition(agents, i, startR);
+                        break;
+                    case 1:
+                        SetStartingPosition(agents, i, startG);
+                        break;
+                    case 2:
+                        SetStartingPosition(agents, i, startB);
+                        break;
+                }
 
             }
 
@@ -78,5 +89,27 @@ namespace ShaderAutomata.Models
                 idx = rnd.Next(active.Length);
             return idx;
         }
+
+        private void SetStartingPosition(Agent[] agents, int i, StartingPosition type)
+        {
+            if (type == StartingPosition.Disk)
+            {
+                var angle = rnd.NextDouble() * Math.PI * 2;
+                var r = 0.28 * Math.Min(shaderConfig.width, shaderConfig.height) * rnd.NextDouble();
+                agents[i].position = new Vector2((float)(shaderConfig.width / 2 + (agents[i].species * 250) + r * Math.Cos(angle)), (float)(shaderConfig.height / 2 + r * Math.Sin(angle)));
+                agents[i].angle = (float)(Math.PI + angle);
+            }
+            else if (type == StartingPosition.Random)
+            {
+                agents[i].position = new Vector2((float)(shaderConfig.width * rnd.NextDouble()), (float)(shaderConfig.height * rnd.NextDouble()));
+                agents[i].angle = (float)(rnd.NextDouble() * 2 * Math.PI);
+            }
+        }
+    }
+
+    public enum StartingPosition
+    {
+        Disk,
+        Random
     }
 }

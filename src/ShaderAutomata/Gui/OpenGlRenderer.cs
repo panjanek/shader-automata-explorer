@@ -135,7 +135,6 @@ namespace ShaderAutomata.Gui
         public void Recreate()
         {
             DestroyGlControl();
-            //placeholder.Children.Clear();
             CreateGlControl();
         }
 
