@@ -1,6 +1,6 @@
 # Automata Explorer
 Exploring various pixel update patterns of slime simulation scheme
-Based on:
+based on:
 
 ## Videos
 * https://www.youtube.com/watch?v=X-iSQQgOd1A&t=925s
