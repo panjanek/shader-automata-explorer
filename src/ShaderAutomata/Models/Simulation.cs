@@ -174,6 +174,13 @@ namespace ShaderAutomata.Models
                 agents[i].position = new Vector2((float)(shaderConfig.width / 2 + dx + r * Math.Cos(angle)), (float)(shaderConfig.height / 2 + r * Math.Sin(angle)));
                 agents[i].angle = type == StartingPosition.CircleInward ? (float)(Math.PI + angle) : (float)(2 * Math.PI + angle);
             }
+            else if (type == StartingPosition.Ring)
+            {
+                var angle = rnd.NextDouble() * Math.PI * 2;
+                var r = (0.15 + 0.1 * agents[i].species + rnd.NextDouble() * 0.075) * Math.Min(shaderConfig.width, shaderConfig.height);
+                agents[i].position = new Vector2((float)(shaderConfig.width / 2 + r * Math.Cos(angle)), (float)(shaderConfig.height / 2 + r * Math.Sin(angle)));
+                agents[i].angle = (float)(rnd.NextDouble() * 2 * Math.PI);
+            }
             else if (type == StartingPosition.Random)
             {
                 agents[i].position = new Vector2((float)(shaderConfig.width * rnd.NextDouble()), (float)(shaderConfig.height * rnd.NextDouble()));
@@ -188,6 +195,7 @@ namespace ShaderAutomata.Models
         DiskOutward,
         CircleInward,
         CircleOutward,
+        Ring,
         Random
     }
 }
