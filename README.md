@@ -31,6 +31,7 @@ Each agent (pixel) moves forward and leaves blurring trail. Agents sense trail i
 
 ![3 species](https://github.com/panjanek/shader-automata-explorer/blob/4774a190a62f16cf73388a9d3625d5499bbf2189/captures/4a.png "3 species")
 ![2 species](https://github.com/panjanek/shader-automata-explorer/blob/4774a190a62f16cf73388a9d3625d5499bbf2189/captures/2a.png "2 species")
+![3 species, different blur](https://github.com/panjanek/shader-automata-explorer/blob/27f800d428300c74ccaa5b129a48142a287f0c07/captures/blur.png "3 species, different blur")
 ![config menu](https://github.com/panjanek/shader-automata-explorer/blob/4774a190a62f16cf73388a9d3625d5499bbf2189/captures/menu.png "config menu")
 
 
