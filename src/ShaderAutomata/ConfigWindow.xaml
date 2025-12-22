@@ -174,6 +174,11 @@
                     <Slider Grid.Row="10" Grid.Column="2" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_g.strayForce"/>
                     <Slider Grid.Row="10" Grid.Column="3" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_b.strayForce"/>
 
+                    <TextBlock Grid.Row="11" Grid.Column="0" Text="Repulsion" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <Slider Grid.Row="11" Grid.Column="1" Minimum="-3" Maximum="3" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_r.repulsion"/>
+                    <Slider Grid.Row="11" Grid.Column="2" Minimum="-3" Maximum="3" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_g.repulsion"/>
+                    <Slider Grid.Row="11" Grid.Column="3" Minimum="-3" Maximum="3" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_b.repulsion"/>
+
                     <Button Grid.Row="12" Grid.Column="0" Click="Restart_Click" HorizontalAlignment="Stretch">Restart</Button>
                     <Button Grid.Row="12" Grid.Column="3" Click="Default_Click" HorizontalAlignment ="Stretch">Restore Default</Button>
                 </Grid>

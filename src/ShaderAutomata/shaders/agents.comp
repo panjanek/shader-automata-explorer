@@ -15,6 +15,7 @@ struct SpeciesConfig
     float repulsionTreshold;
     float turnBackTreshold;
     float strayForce;
+    float repulsion;
 };
 
 struct ShaderConfig {
@@ -88,6 +89,13 @@ float scaleToRange01(uint state)
     return state / 4294967295.0;
 }
 
+float get_random_float_01(Agent agent, uint seed)
+{
+     uint random = hash(uint(agent.position.y * config.width + agent.position.x) + hash(gl_GlobalInvocationID.x + config.time * seed));
+     float random01 = scaleToRange01(random);
+     return random01;
+}
+
 vec4 sense(Agent agent, float sensorAngle, float sensorDist, int sensorSize)
 {
     float sensingAngle = agent.angle + sensorAngle;
@@ -154,8 +162,7 @@ void update_one(uint idx)
         right_opp = max(sense_right.r, sense_right.g);
     }
 
-    uint random =  hash(uint(agent.position.y * config.width + agent.position.x) + hash(gl_GlobalInvocationID.x + config.time * 100037));
-    float random01 = scaleToRange01(random);
+    float random01 = get_random_float_01(agent, 100037);
     float random1 = random01 * 0.3 + 0.85;
 
     float angleDelta = 0;
@@ -175,28 +182,18 @@ void update_one(uint idx)
         angleDelta += spec.turnSpeed * random1 * (right - left);    //attract to trail
     }
 
-    random =  hash(uint(agent.position.y * config.width + agent.position.x) + hash(gl_GlobalInvocationID.x + config.time * 30023));
-    random01 = scaleToRange01(random);
+    random01 = get_random_float_01(agent, 30023);
     random1 = random01 * 0.3 + 0.85;
 
     //compute repulse forces
     float sense_max_opp = max(forward_opp, max(left_opp, right_opp));
     if (sense_max_opp > spec.repulsionTreshold)
     {
-        float repForce = spec.turnSpeed * random1 * (right_opp - left_opp);
-
-        /*
-        // assymetry
-        float g = max(sense_forward.g, max(sense_left.g, sense_right.g));
-        if (agent.species == 0 && sense_max_opp == g)
-            repForce = - repForce;
-        */
-
+        float repForce = spec.repulsion * random1 * (right_opp - left_opp);
         angleDelta -= repForce;
     }
 
-    random =  hash(uint(agent.position.y * config.width + agent.position.x) + hash(gl_GlobalInvocationID.x + config.time * 30023));
-    random01 = scaleToRange01(random);
+    random01 = get_random_float_01(agent, 53270);
     random1 = random01 * 0.3 + 0.85;
 
     //check if shuld turn around

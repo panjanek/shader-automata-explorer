@@ -14,6 +14,7 @@ namespace ShaderAutomata.Models
         {
             velocity = 0.5f;
             turnSpeed = 2f;
+            repulsion = 2f;
             sensorAngle = 0.6f;
             sensorDistance = 4.5f;
             sensorSize = 1;
@@ -49,5 +50,8 @@ namespace ShaderAutomata.Models
 
         [FieldOffset(32)]
         public float strayForce;
+
+        [FieldOffset(36)]
+        public float repulsion;
     }
 }
