@@ -22,5 +22,4 @@ based on:
 ![2 species](https://github.com/panjanek/shader-automata-explorer/blob/4774a190a62f16cf73388a9d3625d5499bbf2189/captures/2a.png "2 species")
 ![config menu](https://github.com/panjanek/shader-automata-explorer/blob/4774a190a62f16cf73388a9d3625d5499bbf2189/captures/menu.png "config menu")
 
-https://github.com/panjanek/shader-automata-explorer/blob/4774a190a62f16cf73388a9d3625d5499bbf2189/captures/menu.png
 
