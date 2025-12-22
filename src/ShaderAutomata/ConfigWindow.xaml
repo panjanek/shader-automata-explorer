@@ -88,10 +88,10 @@
                     <ComboBoxItem>7680x4320</ComboBoxItem>
                 </ComboBox>
 
-                <TextBlock Grid.Row="2" Grid.Column="0" Text="Diffiusuon kernel" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Diffiusuon kernel" VerticalAlignment="Center" Margin="0,0,8,0" ToolTip="Kernel used to blur the trails"/>
                 <ComboBox Name="kernel" Grid.Row="3" Grid.Column="0" SelectionChanged="kernel_SelectionChanged"/>
 
-                <TextBlock Grid.Row="2" Grid.Column="1" Text="Decay" VerticalAlignment="Center" Margin="0,0,8,0" Name="decayLabel"/>
+                <TextBlock Grid.Row="2" Grid.Column="1" Text="Decay" VerticalAlignment="Center" Margin="0,0,8,0" Name="decayLabel" ToolTip="How fast trails decay. 1 = never"/>
                 <Slider Grid.Row="3" Grid.Column="1" Name="decay" Minimum="0.75" Maximum="1" SmallChange="0.001" ValueChanged="decay_ValueChanged"/>
 
                 <Grid Margin="12"  Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3">
@@ -126,62 +126,62 @@
                     <CheckBox Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" Background="Green" Tag="g"  Checked="Value_Changed" Unchecked="Value_Changed"/>
                     <CheckBox Grid.Row="0" Grid.Column="3" HorizontalAlignment="Center" Background="Blue" Tag="b"  Checked="Value_Changed" Unchecked="Value_Changed"/>
 
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Starting with" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Starting position" VerticalAlignment="Center" Margin="0,0,8,0" ToolTip="Restart with a new arrangment of agents"/>
                     <ComboBox Grid.Row="1" Grid.Column="1" Tag="startR" SelectionChanged="ComboBox_SelectionChanged"/>
                     <ComboBox Grid.Row="1" Grid.Column="2" Tag="startG" SelectionChanged="ComboBox_SelectionChanged"/>
                     <ComboBox Grid.Row="1" Grid.Column="3" Tag="startB" SelectionChanged="ComboBox_SelectionChanged"/>
 
-                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Velocity" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Velocity" VerticalAlignment="Center" Margin="0,0,8,0" ToolTip="Velocity of agent in pixels per time step"/>
                     <Slider Grid.Row="2" Grid.Column="1" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_r.velocity"/>
                     <Slider Grid.Row="2" Grid.Column="2" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_g.velocity"/>
                     <Slider Grid.Row="2" Grid.Column="3" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_b.velocity"/>
 
-                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Turn speed" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                    <Slider Grid.Row="3" Grid.Column="1" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_r.attraction"/>
-                    <Slider Grid.Row="3" Grid.Column="2" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_g.attraction"/>
-                    <Slider Grid.Row="3" Grid.Column="3" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_b.attraction"/>
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Attraction" VerticalAlignment="Center" Margin="0,0,8,0" ToolTip="Angle that the agents turns towards dominating trail of the same color (negative = away from)"/>
+                    <Slider Grid.Row="3" Grid.Column="1" Minimum="-5" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_r.attraction"/>
+                    <Slider Grid.Row="3" Grid.Column="2" Minimum="-5" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_g.attraction"/>
+                    <Slider Grid.Row="3" Grid.Column="3" Minimum="-5" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_b.attraction"/>
 
-                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Sensors angle" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Sensors angle" VerticalAlignment="Center" Margin="0,0,8,0" ToolTip="How wide the agent's sensors are"/>
                     <Slider Grid.Row="4" Grid.Column="1" Minimum="0" Maximum="3" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_r.sensorAngle"/>
                     <Slider Grid.Row="4" Grid.Column="2" Minimum="0" Maximum="3" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_g.sensorAngle"/>
                     <Slider Grid.Row="4" Grid.Column="3" Minimum="0" Maximum="3" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_b.sensorAngle"/>
 
-                    <TextBlock Grid.Row="5" Grid.Column="0" Text="Sensors distance" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <TextBlock Grid.Row="5" Grid.Column="0" Text="Sensors distance" VerticalAlignment="Center" Margin="0,0,8,0" ToolTip="How far ahead the agent's sensors are"/>
                     <Slider Grid.Row="5" Grid.Column="1" Minimum="1" Maximum="10" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_r.sensorDistance"/>
                     <Slider Grid.Row="5" Grid.Column="2" Minimum="1" Maximum="10" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_g.sensorDistance"/>
                     <Slider Grid.Row="5" Grid.Column="3" Minimum="1" Maximum="10" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_b.sensorDistance"/>
 
-                    <TextBlock Grid.Row="6" Grid.Column="0" Text="Sensor size" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <TextBlock Grid.Row="6" Grid.Column="0" Text="Sensor size" VerticalAlignment="Center" Margin="0,0,8,0" ToolTip="How large agent's sensor are (0=1px, 1=3px...)"/>
                     <ComboBox Grid.Row="6" Grid.Column="1" Tag="shaderConfig.species_r.sensorSize" SelectionChanged="ComboBox_SelectionChanged"/>
                     <ComboBox Grid.Row="6" Grid.Column="2" Tag="shaderConfig.species_g.sensorSize" SelectionChanged="ComboBox_SelectionChanged"/>
                     <ComboBox Grid.Row="6" Grid.Column="3" Tag="shaderConfig.species_b.sensorSize" SelectionChanged="ComboBox_SelectionChanged"/>
 
-                    <TextBlock Grid.Row="7" Grid.Column="0" Text="Attraction treshold" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <TextBlock Grid.Row="7" Grid.Column="0" Text="Attraction treshold" VerticalAlignment="Center" Margin="0,0,8,0" ToolTip="Below this treshold agent ignores the trail of the same color"/>
                     <Slider Grid.Row="7" Grid.Column="1" Minimum="0" Maximum="1" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_r.attractionTreshold"/>
                     <Slider Grid.Row="7" Grid.Column="2" Minimum="0" Maximum="1" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_g.attractionTreshold"/>
                     <Slider Grid.Row="7" Grid.Column="3" Minimum="0" Maximum="1" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_b.attractionTreshold"/>
 
-                    <TextBlock Grid.Row="8" Grid.Column="0" Text="Repulsion treshold" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <TextBlock Grid.Row="8" Grid.Column="0" Text="Repulsion treshold" VerticalAlignment="Center" Margin="0,0,8,0" ToolTip="Below this treshold agent ignores the trail of different same color"/>
                     <Slider Grid.Row="8" Grid.Column="1" Minimum="0" Maximum="1" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_r.repulsionTreshold"/>
                     <Slider Grid.Row="8" Grid.Column="2" Minimum="0" Maximum="1" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_g.repulsionTreshold"/>
                     <Slider Grid.Row="8" Grid.Column="3" Minimum="0" Maximum="1" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_b.repulsionTreshold"/>
 
-                    <TextBlock Grid.Row="9" Grid.Column="0" Text="Turn back treshold" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <TextBlock Grid.Row="9" Grid.Column="0" Text="Turn back treshold" VerticalAlignment="Center" Margin="0,0,8,0" ToolTip="Probability of 180 turn if strong different color is ahead"/>
                     <Slider Grid.Row="9" Grid.Column="1" Minimum="0" Maximum="1" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_r.turnBackTreshold"/>
                     <Slider Grid.Row="9" Grid.Column="2" Minimum="0" Maximum="1" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_g.turnBackTreshold"/>
                     <Slider Grid.Row="9" Grid.Column="3" Minimum="0" Maximum="1" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_b.turnBackTreshold"/>
 
-                    <TextBlock Grid.Row="10" Grid.Column="0" Text="Stray force" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <TextBlock Grid.Row="10" Grid.Column="0" Text="Stray" VerticalAlignment="Center" Margin="0,0,8,0" ToolTip="Then following clear stray, this random force is applied"/>
                     <Slider Grid.Row="10" Grid.Column="1" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_r.stray"/>
                     <Slider Grid.Row="10" Grid.Column="2" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_g.stray"/>
                     <Slider Grid.Row="10" Grid.Column="3" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_b.stray"/>
 
-                    <TextBlock Grid.Row="11" Grid.Column="0" Text="Repulsion" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                    <Slider Grid.Row="11" Grid.Column="1" Minimum="-3" Maximum="3" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_r.repulsion"/>
-                    <Slider Grid.Row="11" Grid.Column="2" Minimum="-3" Maximum="3" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_g.repulsion"/>
-                    <Slider Grid.Row="11" Grid.Column="3" Minimum="-3" Maximum="3" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_b.repulsion"/>
+                    <TextBlock Grid.Row="11" Grid.Column="0" Text="Repulsion" VerticalAlignment="Center" Margin="0,0,8,0" ToolTip="Angle that the agents turns away from dominating trail of diferent color (negative = towards)"/>
+                    <Slider Grid.Row="11" Grid.Column="1" Minimum="-5" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_r.repulsion"/>
+                    <Slider Grid.Row="11" Grid.Column="2" Minimum="-5" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_g.repulsion"/>
+                    <Slider Grid.Row="11" Grid.Column="3" Minimum="-5" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_b.repulsion"/>
 
-                    <TextBlock Grid.Row="12" Grid.Column="0" Text="Randomization" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <TextBlock Grid.Row="12" Grid.Column="0" Text="Randomization" VerticalAlignment="Center" Margin="0,0,8,0" ToolTip="Max random multiplier applied to all forces" />
                     <Slider Grid.Row="12" Grid.Column="1" Minimum="0" Maximum="2" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_r.randomization"/>
                     <Slider Grid.Row="12" Grid.Column="2" Minimum="0" Maximum="2" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_g.randomization"/>
                     <Slider Grid.Row="12" Grid.Column="3" Minimum="0" Maximum="2" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_b.randomization"/>
