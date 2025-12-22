@@ -1,17 +1,20 @@
 # Automata Explorer
 Exploring various pixel update patterns of slime simulation scheme
-based on:
+ * Up to three species
+ * All parameters configurable in UI
+ * Up to 8K
+ * Up to 10mln agents
 
-## Videos
+## Inspired by videos:
 * https://www.youtube.com/watch?v=X-iSQQgOd1A&t=925s
 * https://www.youtube.com/watch?v=qryINYcgO1s
 * https://www.youtube.com/watch?v=Nx3Uu1hfl6Q
 
-## Repositories
+## Inspired by repositories:
 * https://github.com/SebLague/Slime-Simulation
 * https://github.com/fogleman/physarum
 
-## Articles
+## Inspired by articles:
 * https://uwe-repository.worktribe.com/output/980579
 * https://cargocollective.com/sagejenson/physarum
 
