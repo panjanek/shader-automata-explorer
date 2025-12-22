@@ -7,15 +7,16 @@ layout(local_size_x = {LocalSizeX}) in;
 struct SpeciesConfig
 {
     float velocity;
-    float turnSpeed;
+    float attraction;
     float sensorAngle;
     float sensorDistance;
     int sensorSize;
     float attractionTreshold;
     float repulsionTreshold;
     float turnBackTreshold;
-    float strayForce;
+    float stray;
     float repulsion;
+    float exploration;
 };
 
 struct ShaderConfig {
@@ -162,41 +163,42 @@ void update_one(uint idx)
         right_opp = max(sense_right.r, sense_right.g);
     }
 
-    float random01 = get_random_float_01(agent, 100037);
-    float random1 = random01 * 0.3 + 0.85;
+    float randomization = 1.0;
+
+
+    float random01 = get_random_float_01(agent, 100037);           // random from ficed range 0..1
+    float random0 = (0.5 - random01) * randomization;              // random with middle of range at 0
+    float random1 = 1.0 + (0.5 - random01) * randomization * 0.5;  // random with middle of range at 1.0
 
     float angleDelta = 0;
 
-    // compute attraction forces
+    //attraction
     float sense_max = max(forward, max(left, right));
     if (forward > left && forward > right)
     {
-        angleDelta += (random01 - 0.5) * spec.strayForce;       // follow trail (add small random stray)
+        angleDelta += random0 * spec.stray;           // follow trail (add small random stray)
     }
     else if (sense_max < spec.attractionTreshold)
     {
-        angleDelta += (random01 - 0.5) * 2 * spec.turnSpeed;    //no strong trail - move randomly
+        angleDelta += random0 * spec.exploration;      //no strong trail - move randomly
     }
     else
     {
-        angleDelta += spec.turnSpeed * random1 * (right - left);    //attract to trail
+        angleDelta += spec.attraction * random1 * (right - left);    //attract to trail
     }
-
-    random01 = get_random_float_01(agent, 30023);
-    random1 = random01 * 0.3 + 0.85;
-
-    //compute repulse forces
+    
+    //repulsion
     float sense_max_opp = max(forward_opp, max(left_opp, right_opp));
+    random01 = get_random_float_01(agent, 30023);
+    random1 = 1.0 + (0.5 - random01) * randomization * 0.5;
     if (sense_max_opp > spec.repulsionTreshold)
     {
-        float repForce = spec.repulsion * random1 * (right_opp - left_opp);
+        float repForce = spec.repulsion * random1 * (right_opp - left_opp);   //repulse from different trail
         angleDelta -= repForce;
     }
 
-    random01 = get_random_float_01(agent, 53270);
-    random1 = random01 * 0.3 + 0.85;
-
     //check if shuld turn around
+    random01 = get_random_float_01(agent, 53270);
     if (forward_opp > forward && random01 < spec.turnBackTreshold)
         angleDelta = M_PI;
     

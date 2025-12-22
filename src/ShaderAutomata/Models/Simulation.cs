@@ -103,7 +103,7 @@ namespace ShaderAutomata.Models
             shaderConfig.height = 1080;
 
             shaderConfig.species_g.velocity *= 1.3f;
-            shaderConfig.species_g.turnSpeed *= 1.5f;
+            shaderConfig.species_g.attraction *= 1.5f;
             shaderConfig.species_g.turnBackTreshold = 1.0f;
 
             r = true;

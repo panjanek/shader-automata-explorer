@@ -135,9 +135,9 @@
                     <Slider Grid.Row="2" Grid.Column="3" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_b.velocity"/>
 
                     <TextBlock Grid.Row="3" Grid.Column="0" Text="Turn speed" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                    <Slider Grid.Row="3" Grid.Column="1" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_r.turnSpeed"/>
-                    <Slider Grid.Row="3" Grid.Column="2" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_g.turnSpeed"/>
-                    <Slider Grid.Row="3" Grid.Column="3" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_b.turnSpeed"/>
+                    <Slider Grid.Row="3" Grid.Column="1" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_r.attraction"/>
+                    <Slider Grid.Row="3" Grid.Column="2" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_g.attraction"/>
+                    <Slider Grid.Row="3" Grid.Column="3" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_b.attraction"/>
 
                     <TextBlock Grid.Row="4" Grid.Column="0" Text="Sensors angle" VerticalAlignment="Center" Margin="0,0,8,0"/>
                     <Slider Grid.Row="4" Grid.Column="1" Minimum="0" Maximum="3" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_r.sensorAngle"/>
@@ -170,9 +170,9 @@
                     <Slider Grid.Row="9" Grid.Column="3" Minimum="0" Maximum="1" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_b.turnBackTreshold"/>
 
                     <TextBlock Grid.Row="10" Grid.Column="0" Text="Stray force" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                    <Slider Grid.Row="10" Grid.Column="1" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_r.strayForce"/>
-                    <Slider Grid.Row="10" Grid.Column="2" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_g.strayForce"/>
-                    <Slider Grid.Row="10" Grid.Column="3" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_b.strayForce"/>
+                    <Slider Grid.Row="10" Grid.Column="1" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_r.stray"/>
+                    <Slider Grid.Row="10" Grid.Column="2" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_g.stray"/>
+                    <Slider Grid.Row="10" Grid.Column="3" Minimum="0" Maximum="5" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_b.stray"/>
 
                     <TextBlock Grid.Row="11" Grid.Column="0" Text="Repulsion" VerticalAlignment="Center" Margin="0,0,8,0"/>
                     <Slider Grid.Row="11" Grid.Column="1" Minimum="-3" Maximum="3" ValueChanged="Slider_ValueChanged" Tag="shaderConfig.species_r.repulsion"/>

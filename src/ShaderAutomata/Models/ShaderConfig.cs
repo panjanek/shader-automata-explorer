@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ShaderAutomata.Models
 {
-    [StructLayout(LayoutKind.Explicit, Size = 136)]
+    [StructLayout(LayoutKind.Explicit, Size = 148)]
     public struct ShaderConfig
     {
         public ShaderConfig()
@@ -32,10 +32,10 @@ namespace ShaderAutomata.Models
         [FieldOffset(16)]
         public SpeciesConfig species_r;
 
-        [FieldOffset(56)]
+        [FieldOffset(60)]
         public SpeciesConfig species_g;
 
-        [FieldOffset(96)]
+        [FieldOffset(104)]
         public SpeciesConfig species_b;
     }
 }

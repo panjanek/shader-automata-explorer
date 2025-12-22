@@ -7,13 +7,14 @@ using System.Threading.Tasks;
 
 namespace ShaderAutomata.Models
 {
-    [StructLayout(LayoutKind.Explicit, Size = 36)]
+    [StructLayout(LayoutKind.Explicit, Size = 44)]
     public struct SpeciesConfig
     {
         public SpeciesConfig()
         {
             velocity = 0.5f;
-            turnSpeed = 2f;
+            attraction = 2f;
+            exploration = 4f;
             repulsion = 2f;
             sensorAngle = 0.6f;
             sensorDistance = 4.5f;
@@ -21,14 +22,14 @@ namespace ShaderAutomata.Models
             attractionTreshold = 0.2f;
             repulsionTreshold = 0.1f;
             turnBackTreshold = 0.0f;
-            strayForce = 0.1f;
+            stray = 0.1f;
         }
 
         [FieldOffset(0)]
         public float velocity;
 
         [FieldOffset(4)]
-        public float turnSpeed;
+        public float attraction;
 
         [FieldOffset(8)]
         public float sensorAngle;
@@ -49,9 +50,12 @@ namespace ShaderAutomata.Models
         public float turnBackTreshold;
 
         [FieldOffset(32)]
-        public float strayForce;
+        public float stray;
 
         [FieldOffset(36)]
         public float repulsion;
+
+        [FieldOffset(40)]
+        public float exploration;
     }
 }
