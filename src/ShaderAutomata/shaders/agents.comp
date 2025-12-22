@@ -17,6 +17,7 @@ struct SpeciesConfig
     float stray;
     float repulsion;
     float exploration;
+    float randomization;
 };
 
 struct ShaderConfig {
@@ -163,12 +164,9 @@ void update_one(uint idx)
         right_opp = max(sense_right.r, sense_right.g);
     }
 
-    float randomization = 1.0;
-
-
     float random01 = get_random_float_01(agent, 100037);           // random from ficed range 0..1
-    float random0 = (0.5 - random01) * randomization;              // random with middle of range at 0
-    float random1 = 1.0 + (0.5 - random01) * randomization * 0.5;  // random with middle of range at 1.0
+    float random0 = (0.5 - random01) * spec.randomization;              // random with middle of range at 0
+    float random1 = 1.0 + (0.5 - random01) * spec.randomization * 0.5;  // random with middle of range at 1.0
 
     float angleDelta = 0;
 
@@ -190,7 +188,7 @@ void update_one(uint idx)
     //repulsion
     float sense_max_opp = max(forward_opp, max(left_opp, right_opp));
     random01 = get_random_float_01(agent, 30023);
-    random1 = 1.0 + (0.5 - random01) * randomization * 0.5;
+    random1 = 1.0 + (0.5 - random01) * spec.randomization * 0.5;
     if (sense_max_opp > spec.repulsionTreshold)
     {
         float repForce = spec.repulsion * random1 * (right_opp - left_opp);   //repulse from different trail

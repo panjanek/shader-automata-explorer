@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ShaderAutomata.Models
 {
-    [StructLayout(LayoutKind.Explicit, Size = 44)]
+    [StructLayout(LayoutKind.Explicit, Size = 48)]
     public struct SpeciesConfig
     {
         public SpeciesConfig()
@@ -23,6 +23,7 @@ namespace ShaderAutomata.Models
             repulsionTreshold = 0.1f;
             turnBackTreshold = 0.0f;
             stray = 0.1f;
+            randomization = 1.0f;
         }
 
         [FieldOffset(0)]
@@ -57,5 +58,8 @@ namespace ShaderAutomata.Models
 
         [FieldOffset(40)]
         public float exploration;
+
+        [FieldOffset(44)]
+        public float randomization;
     }
 }

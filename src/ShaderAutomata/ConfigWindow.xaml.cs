@@ -59,17 +59,25 @@ namespace ShaderAutomata
 
                     if (slider.ToolTip == null)
                     {
-                        var toolTip = new ToolTip();
+                        var textBlock = new TextBlock();
 
-                        var binding = new Binding("Value")
+                        textBlock.SetBinding(TextBlock.TextProperty, new Binding("Value")
                         {
                             Source = slider,
-                            StringFormat = "F2"
+                            StringFormat = "0.000"
+                        });
+
+
+                        var toolTip = new ToolTip
+                        {
+                            Placement = System.Windows.Controls.Primitives.PlacementMode.Mouse,
+                            StaysOpen = true,
+                            Content = textBlock
                         };
-
-                        toolTip.SetBinding(ContentControl.ContentProperty, binding);
-
+ 
                         slider.ToolTip = toolTip;
+                        slider.PreviewMouseLeftButtonDown += (_, _) => toolTip.IsOpen = true;
+                        slider.PreviewMouseLeftButtonUp += (_, _) => toolTip.IsOpen = false;
                     }
                 }
             }
